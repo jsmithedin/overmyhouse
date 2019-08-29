@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/binary"
-	//"fmt"
 	"math"
 	"time"
 )
@@ -18,42 +17,8 @@ func parseModeS(message []byte, isMlat bool, knownAircraft *aircraftMap) {
 	altCode := uint16(math.MaxUint16)
 	altitude := int32(math.MaxInt32)
 
-	//var msgType string
-	//switch linkFmt {
-	//case 0:
-	//  msgType = "short air-air surveillance (TCAS)"
-	//case 4:
-	//  msgType = "surveillance, altitude reply"
-	//case 5:
-	//  msgType = "surveillance, Mode A identity reply"
-	//case 11:
-	//  msgType = "All-Call reply containing aircraft address"
-	//case 16:
-	//  msgType = "long air-air surveillance (TCAS)"
-	//case 17:
-	//  msgType = "extended squitter"
-	//case 18:
-	//  msgType = "TIS-B"
-	//case 19:
-	//  msgType = "military extended squitter"
-	//case 20:
-	//  msgType = "Comm-B including altitude reply"
-	//case 21:
-	//  msgType = "Comm-B reply including Mode A identity"
-	//case 22:
-	//  msgType = "military use"
-	//case 24:
-	//  msgType = "special long msg"
-	//default:
-	//  msgType = "unknown"
-	//}
-	//fmt.Printf("UF: %d\n", linkFmt)
-	//fmt.Printf("UF: %08s\n", strconv.FormatInt(linkFmt, 2))
-	//fmt.Println(msgType)
-
 	if linkFmt == 11 || linkFmt == 17 || linkFmt == 18 {
 		icaoAddr = uint32(message[1])*65536 + uint32(message[2])*256 + uint32(message[3])
-		//fmt.Printf("ICAO: %06x\n", icaoAddr)
 	}
 
 	if icaoAddr != math.MaxUint32 {
@@ -78,8 +43,6 @@ func parseModeS(message []byte, isMlat bool, knownAircraft *aircraftMap) {
 		}
 		aircraft.lastPing = time.Now()
 	}
-	//fmt.Println(aircraft)
-	//fmt.Println(aircraftExists)
 
 	if linkFmt == 0 || linkFmt == 4 || linkFmt == 16 || linkFmt == 20 {
 		// Altitude: 13 bit signal
@@ -88,19 +51,15 @@ func parseModeS(message []byte, isMlat bool, knownAircraft *aircraftMap) {
 		if (altCode & 0x0040) > 0 {
 			// meters
 			// TODO
-			//fmt.Println("meters")
 
 		} else if (altCode & 0x0010) > 0 {
 			// feet, raw integer
 			ac := (altCode&0x1F80)>>2 + (altCode&0x0020)>>1 + (altCode & 0x000F)
 			altitude = int32((ac * 25) - 1000)
-			// TODO
-			//fmt.Println("int altitude: ", altitude)
 
 		} else if (altCode & 0x0010) == 0 {
 			// feet, Gillham coded
 			// TODO
-			//fmt.Println("gillham")
 		}
 
 		if altitude != math.MaxInt32 {
@@ -115,7 +74,6 @@ func parseModeS(message []byte, isMlat bool, knownAircraft *aircraftMap) {
 	if icaoAddr != math.MaxUint32 {
 		(*knownAircraft)[icaoAddr] = &aircraft
 	}
-	//fmt.Println(aircraft)
 }
 
 func parseTime(timebytes []byte) time.Time {
@@ -149,23 +107,6 @@ func decodeExtendedSquitter(message []byte, linkFmt uint, aircraft *aircraftData
 
 	var callsign string
 
-	//if linkFmt == 18 {
-	//  switch (message[0] & 7) {
-	//  case 1:
-	//    fmt.Println("Non-ICAO")
-	//  case 2:
-	//    fmt.Println("TIS-B fine")
-	//  case 3:
-	//    fmt.Println("TIS-B coarse")
-	//  case 5:
-	//    fmt.Println("TIS-B anon ADS-B relay")
-	//  case 6:
-	//    fmt.Println("ADS-B rebroadcast")
-	//  default:
-	//    fmt.Println("Non-ICAO unknown")
-	//  }
-	//}
-
 	msgType := uint(message[4]) >> 3
 	var msgSubType uint
 	if msgType == 29 {
@@ -174,7 +115,6 @@ func decodeExtendedSquitter(message []byte, linkFmt uint, aircraft *aircraftData
 		msgSubType = uint(message[4]) & 7
 	}
 
-	//fmt.Printf("ext msg: %d\n", msgType)
 
 	rawLatitude := uint32(math.MaxUint32)
 	rawLongitude := uint32(math.MaxUint32)
@@ -216,7 +156,6 @@ func decodeExtendedSquitter(message []byte, linkFmt uint, aircraft *aircraftData
 			fltByte[4] = aisCharset[chars2&0x3F]
 
 			callsign = string(fltByte[:8])
-			//fmt.Println("Callsign: ", callsign)
 		}
 
 	//case 19:
@@ -240,10 +179,6 @@ func decodeExtendedSquitter(message []byte, linkFmt uint, aircraft *aircraftData
 				uint32(message[10])
 		}
 		if msgType != 20 && msgType != 21 && msgType != 22 {
-			//altitude :=
-			//fmt.Printf("ac12: %#04x\n", ac12Data)
-			//fmt.Printf("ac12: %d\n", decodeAC12Field(ac12Data))
-
 			altitude = decodeAC12Field(ac12Data)
 
 		} else {
@@ -298,15 +233,12 @@ func decodeExtendedSquitter(message []byte, linkFmt uint, aircraft *aircraftData
 func parseRawLatLon(evenLat uint32, evenLon uint32, oddLat uint32,
 	oddLon uint32, lastOdd bool, tFlag bool) (latitude float64, longitude float64) {
 	if evenLat == math.MaxUint32 || oddLat == math.MaxUint32 ||
-		oddLat == math.MaxUint32 || oddLon == math.MaxUint32 {
+		evenLon == math.MaxUint32 || oddLon == math.MaxUint32 {
 		return math.MaxFloat64, math.MaxFloat64
 	}
 
-	//fmt.Printf("Parsing: %d,%d + %d,%d\n", evenLat, evenLon, oddLat, oddLon)
-
 	// http://www.lll.lu/~edward/edward/adsb/DecodingADSBposition.html
 	j := int32((float64(59*evenLat-60*oddLat) / 131072.0) + 0.5)
-	//fmt.Println("J: ", j)
 
 	const airdlat0 = float64(6.0)
 	const airdlat1 = float64(360.0) / float64(59.0)
@@ -320,18 +252,12 @@ func parseRawLatLon(evenLat uint32, evenLon uint32, oddLat uint32,
 		rlatOdd -= 360
 	}
 
-	//fmt.Println("rlat(0): ", rlatEven)
-	//fmt.Println("rlat(1): ", rlatOdd)
-
 	nlEven := cprNLFunction(rlatEven)
 	nlOdd := cprNLFunction(rlatOdd)
 
 	if nlEven != nlOdd {
 		return math.MaxFloat64, math.MaxFloat64
 	}
-
-	//fmt.Println("NL(0): ", nlEven)
-	//fmt.Println("NL(1): ", nlOdd)
 
 	var ni int16
 
@@ -343,12 +269,7 @@ func parseRawLatLon(evenLat uint32, evenLon uint32, oddLat uint32,
 	if ni < 1 {
 		ni = 1
 	}
-	//fmt.Println("NL(i): ", ni)
-
-	//dlon := 360.0/float64(ni)
-	//fmt.Println("dlon(i):", dlon)
-
-	var m int16
+	
 	var outLat float64
 	var outLon float64
 	if tFlag {
@@ -365,10 +286,6 @@ func parseRawLatLon(evenLat uint32, evenLon uint32, oddLat uint32,
 	}
 
 	outLon -= math.Floor((outLon+180.0)/360.0) * 360.0
-
-	//fmt.Println("M: ", m)
-	//fmt.Println("outLat: ", outLat)
-	//fmt.Println("outLon: ", outLon)
 
 	return outLat, outLon
 }
