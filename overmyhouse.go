@@ -11,13 +11,14 @@ import (
 var magicTimestampMLAT = []byte{0xFF, 0x00, 0x4D, 0x4C, 0x41, 0x54}
 
 const (
-	aisCharset       = "@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_ !\"#$%&'()*+,-./0123456789:;<=>?"
+	aisCharset = "@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_ !\"#$%&'()*+,-./0123456789:;<=>?"
 )
 
 var (
 	listenAddr = flag.String("bind", "127.0.0.1:8081", "\":port\" or \"ip:port\" to bind the server to")
 	baseLat    = flag.Float64("baseLat", 55.910838, "latitude used for distance calculation")
 	baseLon    = flag.Float64("baseLon", -3.236900, "longitude for distance calculation")
+	mode       = flag.String("mode", "overhead", "overhead or table")
 )
 
 func main() {
@@ -28,13 +29,20 @@ func main() {
 	server, _ := net.Listen("tcp", *listenAddr)
 	conns := startServer(server)
 
-	ticker := time.NewTicker(500*time.Millisecond)
+	ticker := time.NewTicker(500 * time.Millisecond)
 	quit := make(chan struct{})
 	go func() {
 		for {
 			select {
 			case <-ticker.C:
-				printAircraftTable(&knownAircraft)
+				switch *mode {
+				case "overhead":
+					printOverhead(&knownAircraft)
+				case "table":
+					printAircraftTable(&knownAircraft)
+				default:
+					printOverhead(&knownAircraft)
+				}
 			case <-quit:
 				ticker.Stop()
 				return

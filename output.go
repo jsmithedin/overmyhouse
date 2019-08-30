@@ -16,6 +16,42 @@ func durationSecondsElapsed(since time.Duration) string {
 	}
 }
 
+func printOverhead(knownAircraft *aircraftMap) {
+	sortedAircraft := make(aircraftList, 0, len(*knownAircraft))
+
+	for _, aircraft := range *knownAircraft {
+		sortedAircraft = append(sortedAircraft, aircraft)
+	}
+
+	sort.Sort(sortedAircraft)
+
+	for _, aircraft := range sortedAircraft {
+		stale := (time.Since(aircraft.lastPos) > time.Duration((10)*time.Second))
+		extraStale := (time.Since(aircraft.lastPos) > (time.Duration(20) * time.Second))
+
+		aircraftHasLocation := (aircraft.latitude != math.MaxFloat64 &&
+			aircraft.longitude != math.MaxFloat64)
+		aircraftHasAltitude := aircraft.altitude != math.MaxInt32
+
+		if aircraftHasLocation && aircraftHasAltitude {
+			sLatLon := fmt.Sprintf("%f,%f", aircraft.latitude, aircraft.longitude)
+			sAlt := fmt.Sprintf("%d", aircraft.altitude)
+
+			distance := greatcircle(aircraft.latitude, aircraft.longitude,
+				*baseLat, *baseLon)
+
+			tPos := time.Since(aircraft.lastPos)
+
+			if !stale && !extraStale && metersInMiles(distance) < 6 {
+				fmt.Printf("%06x\t%8s\t%s%s\t%s\t%3.2f\t%s\n",
+					aircraft.icaoAddr, aircraft.callsign,
+					sLatLon, sAlt, metersInMiles(distance),
+					durationSecondsElapsed(tPos))
+			}
+		}
+	}
+}
+
 func printAircraftTable(knownAircraft *aircraftMap) {
 	fmt.Print("\x1b[H\x1b[2J")
 	fmt.Println("ICAO \tCallsign\tLocation\t\tAlt\tDistance   Time")

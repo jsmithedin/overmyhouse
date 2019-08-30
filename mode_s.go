@@ -68,7 +68,7 @@ func parseModeS(message []byte, isMlat bool, knownAircraft *aircraftMap) {
 	}
 
 	if linkFmt == 17 || linkFmt == 18 {
-		decodeExtendedSquitter(message, linkFmt, &aircraft)
+		decodeExtendedSquitter(message, &aircraft)
 	}
 
 	if icaoAddr != math.MaxUint32 {
@@ -103,7 +103,7 @@ func parseTime(timebytes []byte) time.Time {
 		hr, min, sec, nanoSeconds, time.UTC)
 }
 
-func decodeExtendedSquitter(message []byte, linkFmt uint, aircraft *aircraftData) {
+func decodeExtendedSquitter(message []byte, aircraft *aircraftData) {
 
 	var callsign string
 
@@ -114,7 +114,6 @@ func decodeExtendedSquitter(message []byte, linkFmt uint, aircraft *aircraftData
 	} else {
 		msgSubType = uint(message[4]) & 7
 	}
-
 
 	rawLatitude := uint32(math.MaxUint32)
 	rawLongitude := uint32(math.MaxUint32)
@@ -269,17 +268,17 @@ func parseRawLatLon(evenLat uint32, evenLon uint32, oddLat uint32,
 	if ni < 1 {
 		ni = 1
 	}
-	
+
 	var outLat float64
 	var outLon float64
 	if tFlag {
-		m = int16(math.Floor((float64(int32(evenLon*uint32(cprNLFunction(rlatOdd)-1))-
+		m := int16(math.Floor((float64(int32(evenLon*uint32(cprNLFunction(rlatOdd)-1))-
 			int32(oddLon*uint32(cprNLFunction(rlatOdd)))) / 131072.0) + 0.5))
 		outLon = cprDlonFunction(rlatOdd, tFlag, false) * (float64(m%ni) + float64(oddLon)/131072.0)
 		outLat = rlatOdd
 
 	} else {
-		m = int16(math.Floor((float64(int32(evenLon*uint32(cprNLFunction(rlatEven)-1))-
+		m := int16(math.Floor((float64(int32(evenLon*uint32(cprNLFunction(rlatEven)-1))-
 			int32(oddLon*uint32(cprNLFunction(rlatEven)))) / 131072.0) + 0.5))
 		outLon = cprDlonFunction(rlatEven, tFlag, false) * (float64(m%ni) + float64(evenLon)/131072.0)
 		outLat = rlatEven
