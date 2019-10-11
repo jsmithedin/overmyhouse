@@ -6,9 +6,15 @@ import (
 
 	"github.com/dghubble/go-twitter/twitter"
 	"github.com/dghubble/oauth1"
+	"github.com/joho/godotenv"
 )
 
 func tweet(message string) (int64, error) {
+	err := godotenv.Load()
+	if err != nil {
+		return 0, err
+	}
+
 	consumerKey := os.Getenv("consumerkey")
 	consumerSecret := os.Getenv("consumersecret")
 	accessToken := os.Getenv("accesstoken")
