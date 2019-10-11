@@ -4,7 +4,7 @@ Plane over my house -> ADS-B -> SDR -> BEAST -> This thing -> Twitter
 
 Heavily borrowed from https://github.com/mtigas/simurgh
 
-Tweets to https://twitter.com/overmyhouse
+Tweets to https://twitter.com/overjamieshouse
 
 ## Setup
 0. go build
