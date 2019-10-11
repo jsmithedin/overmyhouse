@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"math"
 	"sort"
 	"time"
@@ -44,7 +45,7 @@ func printOverhead(knownAircraft *aircraftMap, tweetedAircraft *tweetedMap) {
 
 			if !stale && !extraStale && metersInMiles(distance) < 6 {
 				if _, ok := (*tweetedAircraft)[aircraft.callsign]; !ok {
-					fmt.Printf("%06x\t%8s\t%s%s\t%3.2f\t%s\n",
+					log.Printf("%06x\t%8s\t%s%s\t%3.2f\t%s\n",
 						aircraft.icaoAddr, aircraft.callsign,
 						sLatLon, sAlt, metersInMiles(distance),
 						durationSecondsElapsed(tPos))
@@ -54,7 +55,7 @@ func printOverhead(knownAircraft *aircraftMap, tweetedAircraft *tweetedMap) {
 							aircraft.callsign, aircraft.callsign, metersInMiles(distance), aircraft.altitude))
 
 						if err != nil {
-							fmt.Print(err)
+							log.Print(err)
 						}
 
 						(*tweetedAircraft)[aircraft.callsign] = time.Now().Unix()
