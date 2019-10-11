@@ -48,15 +48,17 @@ func printOverhead(knownAircraft *aircraftMap, tweetedAircraft *tweetedMap) {
 						aircraft.icaoAddr, aircraft.callsign,
 						sLatLon, sAlt, metersInMiles(distance),
 						durationSecondsElapsed(tPos))
-					
-					_, err := tweet(fmt.Sprintf("%8s flew %3.2f miles from my house!",
-						aircraft.callsign, metersInMiles(distance)))
 
-					if err != nil {
-						fmt.Print(err)
+					if len(aircraft.callsign) > 0 {
+						_, err := tweet(fmt.Sprintf("https://flightaware.com/live/flight/%8s %8s flew %3.2f miles from my house!",
+							aircraft.callsign, metersInMiles(distance)))
+
+						if err != nil {
+							fmt.Print(err)
+						}
+
+						(*tweetedAircraft)[aircraft.callsign] = time.Now().Unix()
 					}
-
-					(*tweetedAircraft)[aircraft.callsign] = time.Now().Unix()
 				}
 			}
 		}
