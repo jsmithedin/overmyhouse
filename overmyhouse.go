@@ -25,6 +25,7 @@ func main() {
 	flag.Parse()
 
 	knownAircraft := make(aircraftMap)
+	tweetedAircraft := make(tweetedMap)
 
 	server, _ := net.Listen("tcp", *listenAddr)
 	conns := startServer(server)
@@ -37,11 +38,13 @@ func main() {
 			case <-ticker.C:
 				switch *mode {
 				case "overhead":
-					printOverhead(&knownAircraft)
+					printOverhead(&knownAircraft, &tweetedAircraft)
+					pruneTweeted(&tweetedAircraft)
 				case "table":
 					printAircraftTable(&knownAircraft)
 				default:
-					printOverhead(&knownAircraft)
+					printOverhead(&knownAircraft, &tweetedAircraft)
+					pruneTweeted(&tweetedAircraft)
 				}
 			case <-quit:
 				ticker.Stop()

@@ -3,11 +3,24 @@ package main
 import (
 	"errors"
 	"os"
+	"time"
 
 	"github.com/dghubble/go-twitter/twitter"
 	"github.com/dghubble/oauth1"
 	"github.com/joho/godotenv"
 )
+
+type tweetedMap map[string]int64
+
+func pruneTweeted(tweetedAircraft *tweetedMap){
+	timeNow := time.Now().Unix()
+
+	for callsign, timeAdded := range *tweetedAircraft{
+		if (timeNow - timeAdded) > 60 {
+			delete(*tweetedAircraft, callsign)
+		}
+	}
+}
 
 func tweet(message string) (int64, error) {
 	err := godotenv.Load()
