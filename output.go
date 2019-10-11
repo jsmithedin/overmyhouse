@@ -51,7 +51,7 @@ func printOverhead(knownAircraft *aircraftMap, tweetedAircraft *tweetedMap) {
 
 					if len(aircraft.callsign) > 0 {
 						_, err := tweet(fmt.Sprintf("https://flightaware.com/live/flight/%8s %8s flew %3.2f miles from my house!",
-							aircraft.callsign, metersInMiles(distance)))
+							aircraft.callsign, aircraft.callsign, metersInMiles(distance)))
 
 						if err != nil {
 							fmt.Print(err)
