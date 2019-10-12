@@ -3,9 +3,12 @@ package main
 import (
 	"bufio"
 	"flag"
+	"log"
 	"net"
 	"reflect"
 	"time"
+
+	"gopkg.in/natefinch/lumberjack.v2"
 )
 
 var magicTimestampMLAT = []byte{0xFF, 0x00, 0x4D, 0x4C, 0x41, 0x54}
@@ -22,6 +25,16 @@ var (
 )
 
 func main() {
+	log.SetOutput(&lumberjack.Logger{
+		Filename:   "overmyhouse.log",
+		MaxSize:    50, // megabytes
+		MaxBackups: 3,
+		MaxAge:     28,   // days
+		Compress:   true, // disabled by default
+	})
+
+	log.Println("Starting to watch over my house")
+
 	flag.Parse()
 
 	knownAircraft := make(aircraftMap)
