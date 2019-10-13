@@ -19,7 +19,7 @@ func durationSecondsElapsed(since time.Duration) string {
 func printOverhead(knownAircraft *KnownAircraft, tweetedAircraft *TweetedAircraft) {
 	sortedAircraft := knownAircraft.sortedAircraft()
 
-	for _, aircraft := range sortedAircraft {
+	for icao, aircraft := range sortedAircraft {
 		stale := (time.Since(aircraft.lastPos) > time.Duration((10)*time.Second))
 		extraStale := (time.Since(aircraft.lastPos) > (time.Duration(20) * time.Second))
 
@@ -54,6 +54,9 @@ func printOverhead(knownAircraft *KnownAircraft, tweetedAircraft *TweetedAircraf
 						tweetedAircraft.AddAircraft(aircraft.callsign)
 					}
 				}
+			}
+			if extraStale {
+				knownAircraft.removeAircraft(uint32(icao))
 			}
 		}
 	}

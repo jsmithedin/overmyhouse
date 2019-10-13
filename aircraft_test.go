@@ -13,6 +13,18 @@ func TestAddingAircraftToKnown(t *testing.T) {
 	}
 }
 
+func TestRemoveAircraftFromKnown(t *testing.T) {
+	testKnown = &KnownAircraft{}
+	testAircraft := aircraftData{}
+	testKnown.addAircraft(123, &testAircraft)
+
+	testKnown.removeAircraft(123)
+
+	if testKnown.knownMap[123] != nil {
+		t.Errorf("Aircraft not removed from known")
+	}
+}
+
 func TestGetAircraftKnown(t *testing.T) {
 	testKnown = &KnownAircraft{}
 	testAircraft := aircraftData{}
