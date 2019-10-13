@@ -41,7 +41,7 @@ func main() {
 
 	if *profile == 1 {
 		go func() {
-			log.Println(http.ListenAndServe("Listening for profiling on localhost:9999", nil))
+			log.Println(http.ListenAndServe("localhost:9999", nil))
 		}()
 	}
 
