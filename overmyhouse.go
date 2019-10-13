@@ -5,7 +5,9 @@ import (
 	"flag"
 	"log"
 	"net"
+	"net/http"
 	"reflect"
+	"runtime"
 	"time"
 
 	"gopkg.in/natefinch/lumberjack.v2"
@@ -35,6 +37,12 @@ func main() {
 	})
 
 	log.Println("Starting to watch over my house")
+
+	go func() {
+		log.Println(http.ListenAndServe("localhost:6060", nil))
+	}()
+
+	runtime.SetMutexProfileFraction(5)
 
 	flag.Parse()
 
