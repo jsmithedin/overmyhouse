@@ -43,7 +43,7 @@ func (tAircraft *TweetedAircraft) PruneTweeted() {
 
 	for callsign, timeAdded := range (*tAircraft).tweetedMap {
 		if (timeNow - timeAdded) > 60 {
-			delete((*tAircraft).tweetedMap, callsign)
+			delete(tAircraft.tweetedMap, callsign)
 		}
 	}
 
