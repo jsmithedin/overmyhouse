@@ -1,4 +1,5 @@
 # OverMyHouse
+[![Build Status](https://travis-ci.org/jsmithedin/overmyhouse.svg?branch=master)](https://travis-ci.org/jsmithedin/overmyhouse)
 
 Plane over my house -> ADS-B -> SDR -> BEAST -> This thing -> Twitter
 
