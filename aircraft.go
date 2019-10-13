@@ -45,6 +45,10 @@ func (kAircraft *KnownAircraft) getAircraft(icaoAddr uint32) (ptrAircraft *aircr
 
 func (kAircraft *KnownAircraft) addAircraft(icaoAddr uint32, aircraft *aircraftData) {
 	kAircraft.mu.Lock()
+	if kAircraft.knownMap == nil {
+		kAircraft.knownMap = make(aircraftMap)
+	}
+
 	kAircraft.knownMap[icaoAddr] = aircraft
 	kAircraft.mu.Unlock()
 }
