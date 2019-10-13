@@ -7,7 +7,7 @@ import (
 
 var testTweeted *TweetedAircraft
 
-func TestAddingAircraft(t *testing.T) {
+func TestAddingAircraftToTweeted(t *testing.T) {
 	testTweeted = &TweetedAircraft{}
 	testTweeted.AddAircraft("addAircraft")
 	if testTweeted.tweetedMap["addAircraft"] == 0 {
@@ -15,7 +15,7 @@ func TestAddingAircraft(t *testing.T) {
 	}
 }
 
-func TestCheckForAircraft(t *testing.T) {
+func TestCheckForAircraftTweeted(t *testing.T) {
 	testTweeted = &TweetedAircraft{}
 	testTweeted.AddAircraft("checkAircraft")
 
@@ -28,7 +28,7 @@ func TestCheckForAircraft(t *testing.T) {
 	}
 }
 
-func TestPruneAircraft(t *testing.T) {
+func TestPruneAircraftTweeted(t *testing.T) {
 	testTweeted = &TweetedAircraft{}
 	testTweeted.AddAircraft("pruneAircraft")
 	testTweeted.AddAircraft("dontPruneAircraft")
@@ -45,14 +45,14 @@ func TestPruneAircraft(t *testing.T) {
 	}
 }
 
-func TestConcurrentAdd(t *testing.T) {
+func TestConcurrentAddTweeted(t *testing.T) {
 	testTweeted = &TweetedAircraft{}
 	// Start with one aircraft to initialise
 	testTweeted.AddAircraft("ABC")
 	channel := make(chan bool)
 
 	for i := 0; i < 5; i++ {
-		go add(testTweeted, "ABC"+string(i), channel)
+		go addTweeted(testTweeted, "ABC"+string(i), channel)
 	}
 
 	channel <- true
@@ -62,17 +62,17 @@ func TestConcurrentAdd(t *testing.T) {
 	}
 }
 
-func TestConcurrentAddAndPrune(t *testing.T) {
+func TestConcurrentAddAndPruneTweeted(t *testing.T) {
 	testTweeted = &TweetedAircraft{}
 	// Start with one aircraft to initialise
 	testTweeted.AddAircraft("ABC")
 	channel := make(chan bool)
 
 	for i := 0; i < 5; i++ {
-		go add(testTweeted, "ABC"+string(i), channel)
+		go addTweeted(testTweeted, "ABC"+string(i), channel)
 	}
 
-	go prune(testTweeted, channel)
+	go pruneTweeted(testTweeted, channel)
 
 	channel <- true
 
@@ -81,13 +81,13 @@ func TestConcurrentAddAndPrune(t *testing.T) {
 	}
 }
 
-func add(tt *TweetedAircraft, cs string, c <-chan bool) {
+func addTweeted(tt *TweetedAircraft, cs string, c <-chan bool) {
 	if <-c {
 		tt.AddAircraft(cs)
 	}
 }
 
-func prune(tt *TweetedAircraft, c <-chan bool) {
+func pruneTweeted(tt *TweetedAircraft, c <-chan bool) {
 	if <-c {
 		tt.PruneTweeted()
 	}

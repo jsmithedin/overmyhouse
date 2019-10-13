@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"math"
+	"sort"
+	"sync"
 	"time"
 )
 
@@ -28,6 +30,41 @@ type aircraftData struct {
 
 type aircraftList []*aircraftData
 type aircraftMap map[uint32]*aircraftData
+
+type KnownAircraft struct {
+	knownMap aircraftMap
+	mu       sync.Mutex
+}
+
+func (kAircraft *KnownAircraft) getAircraft(icaoAddr uint32) (ptrAircraft *aircraftData, aircraftExists bool) {
+	kAircraft.mu.Lock()
+	defer kAircraft.mu.Unlock()
+	ptrAircraft, aircraftExists = kAircraft.knownMap[icaoAddr]
+	return ptrAircraft, aircraftExists
+}
+
+func (kAircraft *KnownAircraft) addAircraft(icaoAddr uint32, aircraft *aircraftData) {
+	kAircraft.mu.Lock()
+	if kAircraft.knownMap == nil {
+		kAircraft.knownMap = make(aircraftMap)
+	}
+
+	kAircraft.knownMap[icaoAddr] = aircraft
+	kAircraft.mu.Unlock()
+}
+
+func (kAircraft *KnownAircraft) sortedAircraft() (sortedAircraftList aircraftList) {
+	kAircraft.mu.Lock()
+	sortedAircraftList = make(aircraftList, 0, len(kAircraft.knownMap))
+
+	for _, aircraft := range kAircraft.knownMap {
+		sortedAircraftList = append(sortedAircraftList, aircraft)
+	}
+
+	sort.Sort(sortedAircraftList)
+	kAircraft.mu.Unlock()
+	return sortedAircraftList
+}
 
 func (a aircraftList) Len() int {
 	return len(a)

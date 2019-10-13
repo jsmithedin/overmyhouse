@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-func parseModeS(message []byte, isMlat bool, knownAircraft *aircraftMap) {
+func parseModeS(message []byte, isMlat bool, knownAircraft *KnownAircraft) {
 	// https://en.wikipedia.org/wiki/Secondary_surveillance_radar#Mode_S
 	// https://github.com/mutability/dump1090/blob/master/mode_s.c
 	linkFmt := uint((message[0] & 0xF8) >> 3)
@@ -23,7 +23,7 @@ func parseModeS(message []byte, isMlat bool, knownAircraft *aircraftMap) {
 
 	if icaoAddr != math.MaxUint32 {
 		var ptrAircraft *aircraftData
-		ptrAircraft, aircraftExists = (*knownAircraft)[icaoAddr]
+		ptrAircraft, aircraftExists = knownAircraft.getAircraft(icaoAddr)
 		if !aircraftExists {
 			// initialize some values
 			aircraft = aircraftData{
@@ -72,7 +72,7 @@ func parseModeS(message []byte, isMlat bool, knownAircraft *aircraftMap) {
 	}
 
 	if icaoAddr != math.MaxUint32 {
-		(*knownAircraft)[icaoAddr] = &aircraft
+		knownAircraft.addAircraft(icaoAddr, &aircraft)
 	}
 }
 

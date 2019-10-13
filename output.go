@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log"
 	"math"
-	"sort"
 	"time"
 )
 
@@ -17,14 +16,8 @@ func durationSecondsElapsed(since time.Duration) string {
 	}
 }
 
-func printOverhead(knownAircraft *aircraftMap, tweetedAircraft *TweetedAircraft) {
-	sortedAircraft := make(aircraftList, 0, len(*knownAircraft))
-
-	for _, aircraft := range *knownAircraft {
-		sortedAircraft = append(sortedAircraft, aircraft)
-	}
-
-	sort.Sort(sortedAircraft)
+func printOverhead(knownAircraft *KnownAircraft, tweetedAircraft *TweetedAircraft) {
+	sortedAircraft := knownAircraft.sortedAircraft()
 
 	for _, aircraft := range sortedAircraft {
 		stale := (time.Since(aircraft.lastPos) > time.Duration((10)*time.Second))
@@ -66,17 +59,11 @@ func printOverhead(knownAircraft *aircraftMap, tweetedAircraft *TweetedAircraft)
 	}
 }
 
-func printAircraftTable(knownAircraft *aircraftMap) {
+func printAircraftTable(knownAircraft *KnownAircraft) {
 	fmt.Print("\x1b[H\x1b[2J")
 	fmt.Println("ICAO \tCallsign\tLocation\t\tAlt\tDistance   Time")
 
-	sortedAircraft := make(aircraftList, 0, len(*knownAircraft))
-
-	for _, aircraft := range *knownAircraft {
-		sortedAircraft = append(sortedAircraft, aircraft)
-	}
-
-	sort.Sort(sortedAircraft)
+	sortedAircraft := knownAircraft.sortedAircraft()
 
 	for _, aircraft := range sortedAircraft {
 		stale := (time.Since(aircraft.lastPos) > time.Duration((10)*time.Second))
