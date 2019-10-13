@@ -37,7 +37,7 @@ func main() {
 
 	flag.Parse()
 
-	knownAircraft := make(aircraftMap)
+	var knownAircraft KnownAircraft
 	var tweetedAircraft TweetedAircraft
 
 	server, _ := net.Listen("tcp", *listenAddr)
@@ -82,7 +82,7 @@ func startServer(listener net.Listener) chan net.Conn {
 	return ch
 }
 
-func handleConnection(conn net.Conn, knownAircraft *aircraftMap) {
+func handleConnection(conn net.Conn, knownAircraft *KnownAircraft) {
 	reader := bufio.NewReader(conn)
 
 	var bufferedMessage []byte
