@@ -6,7 +6,6 @@ import (
 	"log"
 	"net"
 	"reflect"
-	"sync"
 	"time"
 
 	"gopkg.in/natefinch/lumberjack.v2"
@@ -39,9 +38,7 @@ func main() {
 	flag.Parse()
 
 	knownAircraft := make(aircraftMap)
-	tweetedAircraft := make(tweetedMap)
-
-	var mutex = &sync.Mutex{}
+	var tweetedAircraft TweetedAircraft
 
 	server, _ := net.Listen("tcp", *listenAddr)
 	conns := startServer(server)
@@ -53,22 +50,11 @@ func main() {
 			select {
 			case <-ticker.C:
 				switch *mode {
-				case "overhead":
-					mutex.Lock()
-					printOverhead(&knownAircraft, &tweetedAircraft)
-					mutex.Unlock()
-					mutex.Lock()
-					pruneTweeted(&tweetedAircraft)
-					mutex.Unlock()
 				case "table":
 					printAircraftTable(&knownAircraft)
 				default:
-					mutex.Lock()
 					printOverhead(&knownAircraft, &tweetedAircraft)
-					mutex.Unlock()
-					mutex.Lock()
-					pruneTweeted(&tweetedAircraft)
-					mutex.Unlock()
+					tweetedAircraft.PruneTweeted()
 				}
 			case <-quit:
 				ticker.Stop()

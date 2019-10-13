@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"os"
+	"sync"
 	"time"
 
 	"github.com/dghubble/go-twitter/twitter"
@@ -12,14 +13,41 @@ import (
 
 type tweetedMap map[string]int64
 
-func pruneTweeted(tweetedAircraft *tweetedMap){
+type TweetedAircraft struct {
+	tweetedMap tweetedMap
+	mu         sync.Mutex
+}
+
+func (tAircraft *TweetedAircraft) AddAircraft(callsign string) {
+	tAircraft.mu.Lock()
+
+	if tAircraft.tweetedMap == nil {
+		tAircraft.tweetedMap = make(tweetedMap)
+	}
+
+	tAircraft.tweetedMap[callsign] = time.Now().Unix()
+
+	tAircraft.mu.Unlock()
+}
+
+func (tAircraft *TweetedAircraft) AlreadyTweeted(callsign string) bool {
+	tAircraft.mu.Lock()
+	defer tAircraft.mu.Unlock()
+	_, ok := tAircraft.tweetedMap[callsign]
+	return ok
+}
+
+func (tAircraft *TweetedAircraft) PruneTweeted() {
+	tAircraft.mu.Lock()
 	timeNow := time.Now().Unix()
 
-	for callsign, timeAdded := range *tweetedAircraft{
+	for callsign, timeAdded := range (*tAircraft).tweetedMap {
 		if (timeNow - timeAdded) > 60 {
-			delete(*tweetedAircraft, callsign)
+			delete((*tAircraft).tweetedMap, callsign)
 		}
 	}
+
+	tAircraft.mu.Unlock()
 }
 
 func tweet(message string) (int64, error) {
@@ -52,4 +80,3 @@ func tweet(message string) (int64, error) {
 		return tweet.ID, nil
 	}
 }
-

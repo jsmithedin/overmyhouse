@@ -17,7 +17,7 @@ func durationSecondsElapsed(since time.Duration) string {
 	}
 }
 
-func printOverhead(knownAircraft *aircraftMap, tweetedAircraft *tweetedMap) {
+func printOverhead(knownAircraft *aircraftMap, tweetedAircraft *TweetedAircraft) {
 	sortedAircraft := make(aircraftList, 0, len(*knownAircraft))
 
 	for _, aircraft := range *knownAircraft {
@@ -44,7 +44,7 @@ func printOverhead(knownAircraft *aircraftMap, tweetedAircraft *tweetedMap) {
 			tPos := time.Since(aircraft.lastPos)
 
 			if !stale && !extraStale && metersInMiles(distance) < 6 {
-				if _, ok := (*tweetedAircraft)[aircraft.callsign]; !ok {
+				if !tweetedAircraft.AlreadyTweeted(aircraft.callsign) {
 					log.Printf("%06x\t%8s\t%s%s\t%3.2f\t%s\n",
 						aircraft.icaoAddr, aircraft.callsign,
 						sLatLon, sAlt, metersInMiles(distance),
@@ -58,7 +58,7 @@ func printOverhead(knownAircraft *aircraftMap, tweetedAircraft *tweetedMap) {
 							log.Print(err)
 						}
 
-						(*tweetedAircraft)[aircraft.callsign] = time.Now().Unix()
+						tweetedAircraft.AddAircraft(aircraft.callsign)
 					}
 				}
 			}
