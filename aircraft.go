@@ -53,6 +53,12 @@ func (kAircraft *KnownAircraft) addAircraft(icaoAddr uint32, aircraft *aircraftD
 	kAircraft.mu.Unlock()
 }
 
+func (kAircraft *KnownAircraft) removeAircraft(icaoAddr uint32) {
+	kAircraft.mu.Lock()
+	delete(kAircraft.knownMap, icaoAddr)
+	kAircraft.mu.Unlock()
+}
+
 func (kAircraft *KnownAircraft) sortedAircraft() (sortedAircraftList aircraftList) {
 	kAircraft.mu.Lock()
 	sortedAircraftList = make(aircraftList, 0, len(kAircraft.knownMap))
