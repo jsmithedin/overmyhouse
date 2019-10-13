@@ -5,11 +5,11 @@ import (
 	"flag"
 	"log"
 	"net"
-	"net/http"
 	"reflect"
 	"time"
 
 	"gopkg.in/natefinch/lumberjack.v2"
+	_ "net/http/pprof"
 )
 
 var magicTimestampMLAT = []byte{0xFF, 0x00, 0x4D, 0x4C, 0x41, 0x54}
@@ -23,7 +23,6 @@ var (
 	baseLat    = flag.Float64("baseLat", 55.910838, "latitude used for distance calculation")
 	baseLon    = flag.Float64("baseLon", -3.236900, "longitude for distance calculation")
 	mode       = flag.String("mode", "overhead", "overhead or table")
-	profile    = flag.Int("profile", 0, "1 if enabled")
 )
 
 func main() {
@@ -38,12 +37,6 @@ func main() {
 	log.Println("Starting to watch over my house")
 
 	flag.Parse()
-
-	if *profile == 1 {
-		go func() {
-			log.Println(http.ListenAndServe("localhost:9999", nil))
-		}()
-	}
 
 	var knownAircraft KnownAircraft
 	var tweetedAircraft TweetedAircraft
