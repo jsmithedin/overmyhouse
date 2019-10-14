@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+	"sync"
 	"testing"
 	"time"
 )
@@ -49,16 +51,24 @@ func TestConcurrentAddTweeted(t *testing.T) {
 	testTweeted = &TweetedAircraft{}
 	// Start with one aircraft to initialise
 	testTweeted.AddAircraft("ABC")
-	channel := make(chan bool)
+	channel := make(chan string)
+	var wg sync.WaitGroup
 
-	for i := 0; i < 5; i++ {
-		go addTweeted(testTweeted, "ABC"+string(i), channel)
+	for i := 0; i < 500; i++ {
+		wg.Add(1)
+		go addTweeted(testTweeted, channel, &wg)
 	}
 
-	channel <- true
+	for i := 0; i < 500; i++ {
+		channel <- fmt.Sprintf("ABC%d", i)
+	}
 
-	if !testTweeted.AlreadyTweeted("ABC") {
-		t.Errorf("Concurrent adding went wrong")
+	wg.Wait()
+
+	for i := 0; i < 500; i++ {
+		if !testTweeted.AlreadyTweeted(fmt.Sprintf("ABC%d", i)) {
+			t.Errorf("Concurrent adding went wrong")
+		}
 	}
 }
 
@@ -66,29 +76,37 @@ func TestConcurrentAddAndPruneTweeted(t *testing.T) {
 	testTweeted = &TweetedAircraft{}
 	// Start with one aircraft to initialise
 	testTweeted.AddAircraft("ABC")
-	channel := make(chan bool)
+	channel := make(chan string)
+	var wg sync.WaitGroup
 
-	for i := 0; i < 5; i++ {
-		go addTweeted(testTweeted, "ABC"+string(i), channel)
+	for i := 0; i < 500; i++ {
+		wg.Add(1)
+		go addTweeted(testTweeted, channel, &wg)
 	}
 
-	go pruneTweeted(testTweeted, channel)
+	wg.Add(1)
+	go pruneTweeted(testTweeted, &wg)
 
-	channel <- true
+	for i := 0; i < 500; i++ {
+		channel <- fmt.Sprintf("ABC%d", i)
+	}
 
-	if !testTweeted.AlreadyTweeted("ABC") {
-		t.Errorf("Concurrent adding went wrong")
+	wg.Wait()
+
+	for i := 0; i < 500; i++ {
+		if !testTweeted.AlreadyTweeted(fmt.Sprintf("ABC%d", i)) {
+			t.Errorf("Concurrent adding went wrong")
+		}
 	}
 }
 
-func addTweeted(tt *TweetedAircraft, cs string, c <-chan bool) {
-	if <-c {
-		tt.AddAircraft(cs)
-	}
+func addTweeted(tt *TweetedAircraft, c <-chan string, wg *sync.WaitGroup) {
+	cs := <-c
+	tt.AddAircraft(cs)
+	wg.Done()
 }
 
-func pruneTweeted(tt *TweetedAircraft, c <-chan bool) {
-	if <-c {
-		tt.PruneTweeted()
-	}
+func pruneTweeted(tt *TweetedAircraft, wg *sync.WaitGroup) {
+	tt.PruneTweeted()
+	wg.Done()
 }

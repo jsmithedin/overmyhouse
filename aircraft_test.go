@@ -1,6 +1,9 @@
 package main
 
-import "testing"
+import (
+	"sync"
+	"testing"
+)
 
 var testKnown *KnownAircraft
 
@@ -59,22 +62,23 @@ func TestGetSortedAircraft(t *testing.T) {
 func TestSortWhilstAdding(t *testing.T) {
 	testKnown = &KnownAircraft{}
 	testAircraft := aircraftData{}
-	channel := make(chan bool)
 
-	go addKnown(testKnown, 123, &testAircraft, channel)
-	go sortKnown(testKnown, channel)
+	wg := sync.WaitGroup{}
 
-	channel <- true
+	wg.Add(1)
+	go addKnown(testKnown, 123, &testAircraft, &wg)
+	wg.Add(1)
+	go sortKnown(testKnown, &wg)
+
+	wg.Wait()
 }
 
-func addKnown(ka *KnownAircraft, icao uint32, ac *aircraftData, c <-chan bool) {
-	if <-c {
-		ka.addAircraft(icao, ac)
-	}
+func addKnown(ka *KnownAircraft, icao uint32, ac *aircraftData, wg *sync.WaitGroup) {
+	ka.addAircraft(icao, ac)
+	wg.Done()
 }
 
-func sortKnown(ka *KnownAircraft, c <-chan bool) {
-	if <-c {
-		_ = ka.sortedAircraft()
-	}
+func sortKnown(ka *KnownAircraft, wg *sync.WaitGroup) {
+	_ = ka.sortedAircraft()
+	wg.Done()
 }
