@@ -1,0 +1,12 @@
+[Unit]
+Description=Overmyhouse forwarder
+PartOf=overmyhouse.service
+After=overmyhouse.service
+After=overmyhouse-watcher.service
+
+[Service]
+ExecStart=/usr/local/overmyhouse/forwarder.sh
+Restart=on-failure
+
+[Install]
+WantedBy=overmyhouse.service
