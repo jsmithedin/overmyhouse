@@ -16,7 +16,7 @@ func durationSecondsElapsed(since time.Duration) string {
 	}
 }
 
-func printOverhead(knownAircraft *KnownAircraft, tweetedAircraft *TweetedAircraft) {
+func printOverhead(knownAircraft *KnownAircraft, tweetedAircraft *TweetedAircraft, radius *int) {
 	sortedAircraft := knownAircraft.sortedAircraft()
 
 	for icao, aircraft := range sortedAircraft {
@@ -36,7 +36,7 @@ func printOverhead(knownAircraft *KnownAircraft, tweetedAircraft *TweetedAircraf
 
 			tPos := time.Since(aircraft.lastPos)
 
-			if !stale && !extraStale && metersInMiles(distance) < 6 {
+			if !stale && !extraStale && metersInMiles(distance) < float64(*radius) {
 				if !tweetedAircraft.AlreadyTweeted(aircraft.callsign) {
 					log.Printf("%06x\t%8s\t%s%s\t%3.2f\t%s\n",
 						aircraft.icaoAddr, aircraft.callsign,

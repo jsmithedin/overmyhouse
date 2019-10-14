@@ -22,6 +22,7 @@ var (
 	baseLat    = flag.Float64("baseLat", 55.910838, "latitude used for distance calculation")
 	baseLon    = flag.Float64("baseLon", -3.236900, "longitude for distance calculation")
 	mode       = flag.String("mode", "overhead", "overhead or table")
+	radius     = flag.Int("radius", 3, "Radius to alert on")
 )
 
 func main() {
@@ -53,7 +54,7 @@ func main() {
 				case "table":
 					printAircraftTable(&knownAircraft)
 				default:
-					printOverhead(&knownAircraft, &tweetedAircraft)
+					printOverhead(&knownAircraft, &tweetedAircraft, radius)
 					tweetedAircraft.PruneTweeted()
 				}
 			case <-quit:
