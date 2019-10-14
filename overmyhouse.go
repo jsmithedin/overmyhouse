@@ -8,6 +8,7 @@ import (
 	"reflect"
 	"time"
 
+	"github.com/coreos/go-systemd/daemon"
 	"gopkg.in/natefinch/lumberjack.v2"
 )
 
@@ -63,6 +64,8 @@ func main() {
 			}
 		}
 	}()
+
+	_, _ = daemon.SdNotify(false, "READY=1")
 
 	for {
 		go handleConnection(<-conns, &knownAircraft)
