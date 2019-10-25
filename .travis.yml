@@ -6,9 +6,10 @@ jobs:
     include:
         - stage: test
           script: 
-            - go test -v 
+            - make test
         - stage: docker
           script:
+              - make build
               - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
               - docker build --no-cache -t ${TRAVIS_REPO_SLUG}:${TRAVIS_COMMIT} .
               - docker push ${TRAVIS_REPO_SLUG}:${TRAVIS_COMMIT}
