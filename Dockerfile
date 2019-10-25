@@ -5,4 +5,4 @@ LABEL maintainer="jamie@jsmth.co.uk"
 COPY .env .
 COPY overmyhouse .
 
-CMD ["overmyhouse"]
+CMD ["./overmyhouse"]
