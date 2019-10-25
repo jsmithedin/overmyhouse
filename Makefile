@@ -6,7 +6,7 @@ GOTEST=$(GOCMD) test
 GOGET=$(GOCMD) get
 BINARY_NAME=overmyhouse
 IMAGE=jsmithedin/overmyhouse
-VERSION=$(shell git branch | grep \* | cut -d ' ' -f2)
+VERSION=master
 
 all: test build
 build:
