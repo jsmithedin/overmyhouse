@@ -7,10 +7,14 @@ jobs:
     script:
     - make test
   - stage: docker
+    if: branch = master
     script:
     - make build
     - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+    - export TAG=latest
     - docker build --no-cache -t ${TRAVIS_REPO_SLUG}:${TRAVIS_COMMIT} .
+    - docker tag $REPO:$COMMIT $REPO:$TAG
+    - docker tag $REPO:$COMMIT $REPO:travis-$TRAVIS_BUILD_NUMBER
     - docker push ${TRAVIS_REPO_SLUG}:${TRAVIS_COMMIT}
 notifications:
   slack:
