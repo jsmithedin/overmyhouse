@@ -1,15 +1,17 @@
 language: go
 go:
 - '1.13'
-services:
-    - docker
-before_install:
-    - docker build --no-cache -t ${TRAVIS_REPO_SLUG}:${TRAVIS_COMMIT} .
-    - docker run ${TRAVIS_REPO_SLUG}:${TRAVIS_COMMIT} /go/src/github.com/jsmithedin/overmyhouse/overmyhouse.test
-    - docker run -d ${TRAVIS_REPO_SLUG}:${TRAVIS_COMMIT}
-script:
-  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-  - docker push ${TRAVIS_REPO_SLUG}:${TRAVIS_COMMIT}
+
+jobs:
+    include:
+        - stage: test
+          script: 
+            - go test -v 
+        - stage: docker
+          script:
+              - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+              - docker build --no-cache -t ${TRAVIS_REPO_SLUG}:${TRAVIS_COMMIT} .
+              - docker push ${TRAVIS_REPO_SLUG}:${TRAVIS_COMMIT}
 notifications:
   slack:
     secure: h2loqdhQx+KjVZrxpXfn4bOi73wL+SeOy+txuRekqeP6MhMbzVoOID8gtexognLaHiCuDuy2YoIou80OP1PEg5kQbQr/p/vybZI4o+4e5v9eceFgLGe5TxDkvgH/ugqlElismPIU1PecvWWnvjNGdQrR94x/TR3Vf//71KWsyYu4be7aXBNxmz808hWwT41WLpdd3UQ+nr0Q/Cou0DwZJbtH/QlEFWgP+Dr8ymNNQw+gtCleZsKx3qW1rLXrLfTvyrhogRUtfISe6ef0VHo1C2XjwTPZQr23nY/TH5CZKFKPhQ2wZcH2ykBODIPXr+AuVgFYteMjZXtW5xkIBXNE5LsE/5Pw5UPnKHrFkvoxYzzPsPI43KcsSqwDzNbfA7zYRWescWkqfy5Up8PqNmJgYckou2yC5mU42ZFiqtWlkaUWLHycaTnyeAvTvYo2Srn0ZcAsZ2oGDuhHCp9lEXg+bP4rkDV+XC8JG3hMADqPTz6TU0bu/hotnifBmLPAbM+WGB9zZAesCvdvLWs6JaeCzqfRX5QC1MgmdYi22kO9NIDHl07OD19BpVJf7ZGdMX8PSk3pX47LMxCFWp5GAiDTeDfVf3eBd8t6W8UtWuboASYf8hhdIupsE8EGd9L1KLcd5elE3lONFvrPrzTcPIPMmHHH0nCulPye3qOzgMrj0Vw=
