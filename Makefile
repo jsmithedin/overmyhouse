@@ -26,8 +26,8 @@ install:
 	systemctl start overmyhouse
 	systemctl start overmyhouse-forwarder
 image:
-	docker build -t ${IMAGE}:${VERSION} .
-	docker tag ${IMAGE}:${VERSION} ${IMAGE}:latest
+	docker build -t $(IMAGE):$(VERSION) .
+	docker tag $(IMAGE):$(VERSION) $(IMAGE):latest
 push-image:
-	docker push ${IMAGE}:${VERSION}
-	docker push ${IMAGE}:latest
+	docker push $(IMAGE):$(VERSION)
+	docker push $(IMAGE):latest
