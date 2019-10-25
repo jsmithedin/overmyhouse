@@ -5,6 +5,8 @@ GOCLEAN=$(GOCMD) clean
 GOTEST=$(GOCMD) test
 GOGET=$(GOCMD) get
 BINARY_NAME=overmyhouse
+IMAGE=jsmithedin/overmyhouse
+VERSION=master
 
 all: test build
 build:
@@ -23,3 +25,9 @@ install:
 	cp overmyhouse /usr/local/overmyhouse/
 	systemctl start overmyhouse
 	systemctl start overmyhouse-forwarder
+image:
+	docker build -t $(IMAGE):$(VERSION) .
+	docker tag $(IMAGE):$(VERSION) $(IMAGE):latest
+push-image:
+	docker push $(IMAGE):$(VERSION)
+	docker push $(IMAGE):latest
