@@ -53,6 +53,7 @@ func main() {
 	}
 
 	ticker := time.NewTicker(500 * time.Millisecond)
+	logCount := 0
 	quit := make(chan struct{})
 	go func() {
 		for {
@@ -60,10 +61,15 @@ func main() {
 			case <-ticker.C:
 				switch *mode {
 				case "table":
-					printAircraftTable(&knownAircraft)
+					printAircraftTable(&knownAircraft, false)
 				default:
 					printOverhead(&knownAircraft, &tweetedAircraft, radius)
 					tweetedAircraft.PruneTweeted()
+					logCount += 500
+					if logCount == 30000 {
+						printAircraftTable(&knownAircraft, true)
+						logCount = 0
+					}
 				}
 			case <-quit:
 				ticker.Stop()
@@ -96,14 +102,14 @@ func startServer(listener net.Listener) chan net.Conn {
 func startClient(feeder string) chan net.Conn {
 	ch := make(chan net.Conn)
 	go func() {
-		for {
-			con, _ := net.Dial("tcp", feeder)
-			if con == nil {
-				continue
-			}
-			ch <- con
+		con, _ := net.Dial("tcp", feeder)
+		if con == nil {
+			con.Close()
+			con, _ = net.Dial("tcp", feeder)
 		}
+		ch <- con
 	}()
+
 	return ch
 }
 
@@ -169,4 +175,5 @@ func handleConnection(conn net.Conn, knownAircraft *KnownAircraft) {
 
 		parseModeS(msgContent, isMlat, knownAircraft)
 	}
+
 }

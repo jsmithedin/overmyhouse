@@ -62,8 +62,10 @@ func printOverhead(knownAircraft *KnownAircraft, tweetedAircraft *TweetedAircraf
 	}
 }
 
-func printAircraftTable(knownAircraft *KnownAircraft) {
-	fmt.Print("\x1b[H\x1b[2J")
+func printAircraftTable(knownAircraft *KnownAircraft, log bool) {
+	if log == false {
+		fmt.Print("\x1b[H\x1b[2J")
+	}
 	fmt.Println("ICAO \tCallsign\tLocation\t\tAlt\tDistance   Time")
 
 	sortedAircraft := knownAircraft.sortedAircraft()
