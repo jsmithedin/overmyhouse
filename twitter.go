@@ -13,11 +13,13 @@ import (
 
 type tweetedMap map[string]int64
 
+// TweetedAircraft ties a map of Aircraft we have already tweeted about with a mutex controlling access to the map
 type TweetedAircraft struct {
 	tweetedMap tweetedMap
 	mu         sync.Mutex
 }
 
+// AddAircraft adds a new Aircraft to the map of Aircraft we have tweeted about
 func (tAircraft *TweetedAircraft) AddAircraft(callsign string) {
 	tAircraft.mu.Lock()
 
@@ -30,6 +32,7 @@ func (tAircraft *TweetedAircraft) AddAircraft(callsign string) {
 	tAircraft.mu.Unlock()
 }
 
+// AlreadyTweeted checks if an aircraft is present in the map
 func (tAircraft *TweetedAircraft) AlreadyTweeted(callsign string) bool {
 	tAircraft.mu.Lock()
 	defer tAircraft.mu.Unlock()
@@ -37,6 +40,7 @@ func (tAircraft *TweetedAircraft) AlreadyTweeted(callsign string) bool {
 	return ok
 }
 
+// PruneTweeted removes aircraft from the map which have been present for 60s
 func (tAircraft *TweetedAircraft) PruneTweeted() {
 	tAircraft.mu.Lock()
 	timeNow := time.Now().Unix()
@@ -76,7 +80,7 @@ func tweet(message string) (int64, error) {
 
 	if err != nil {
 		return 0, err
-	} else {
-		return tweet.ID, nil
 	}
+
+	return tweet.ID, nil
 }

@@ -10,15 +10,15 @@ Heavily borrowed from <https://github.com/mtigas/simurgh>
 Tweets to <https://twitter.com/overjamieshouse>
 
 ## Setup
-0. go build
-1. Stick a .env in the same dir as the binary containing twitter stuff: 
+ 1. go build
+ 2. Stick a .env in the same dir as the binary containing twitter stuff: 
 ```shell script
 consumerkey=
 consumersecret=
 accesstoken=
 accesssecret=
 ```
-3. ./overmyhouse
+ 3. ./overmyhouse
 ## Testing
 ``` shell script
 go test -v

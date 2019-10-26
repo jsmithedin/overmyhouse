@@ -1,4 +1,4 @@
-FROM gcr.io/distroless/base
+FROM gcr.io/distroless/base:latest
 
 LABEL maintainer="jamie@jsmth.co.uk"
 
