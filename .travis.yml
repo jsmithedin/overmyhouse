@@ -6,6 +6,8 @@ jobs:
   - stage: test
     script:
     - make test
+    - go get github.com/schrej/godacov
+    - godacov -t $CODACY_TOKEN -r ./coverage.out -c $TRAVIS_COMMIT
   - stage: docker
     if: branch = master
     script:
