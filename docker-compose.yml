@@ -1,0 +1,12 @@
+version: "3"
+services:
+        overmyhouse:
+                image: jsmithedin/overmyhouse:latest
+        watchtower:
+                image: containrrr/watchtower
+                volumes:
+                        - /var/run/docker.sock:/var/run/docker.sock
+                command: --interval 30
+                environment:
+                        - WATCHTOWER_NOTIFICATIONS=slack
+                        - WATCHTOWER_NOTIFICATION_SLACK_HOOK_URL=

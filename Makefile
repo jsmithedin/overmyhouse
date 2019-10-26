@@ -21,10 +21,11 @@ run:
 	$(GOBUILD) -o $(BINARY_NAME) -v ./...
 	./$(BINARY_NAME)
 install:
-	systemctl stop overmyhouse
-	cp overmyhouse /usr/local/overmyhouse/
-	systemctl start overmyhouse
-	systemctl start overmyhouse-forwarder
+	sudo cp docker-compose@.service /etc/systemd/system/
+	sudo systemctl daemon-reload
+	sudo cp docker-compose.yml /etc/docker/compose/overmyhouse/
+	sudo systemctl enable docker-compose@overmyhouse
+	sudo systemctl start docker-compose@overmyhouse
 image:
 	docker build -t $(IMAGE):$(VERSION) .
 	docker tag $(IMAGE):$(VERSION) $(IMAGE):latest
