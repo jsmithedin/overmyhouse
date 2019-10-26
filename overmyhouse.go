@@ -19,6 +19,7 @@ const (
 )
 
 var (
+	serverMode = flag.String("serverMode", "client", "Act as client or server")
 	listenAddr = flag.String("bind", "127.0.0.1:8081", "\":port\" or \"ip:port\" to bind the server to")
 	baseLat    = flag.Float64("baseLat", 55.910838, "latitude used for distance calculation")
 	baseLon    = flag.Float64("baseLon", -3.236900, "longitude for distance calculation")
@@ -42,8 +43,13 @@ func main() {
 	var knownAircraft KnownAircraft
 	var tweetedAircraft TweetedAircraft
 
-	server, _ := net.Listen("tcp", *listenAddr)
-	conns := startServer(server)
+	conns := make(chan net.Conn)
+	if *serverMode == "server" {
+		server, _ := net.Listen("tcp", *listenAddr)
+		conns = startServer(server)
+	} else {
+		conns = startClient(*listenAddr)
+	}
 
 	ticker := time.NewTicker(500 * time.Millisecond)
 	quit := make(chan struct{})
@@ -81,6 +87,20 @@ func startServer(listener net.Listener) chan net.Conn {
 				continue
 			}
 			ch <- client
+		}
+	}()
+	return ch
+}
+
+func startClient(listenAddr string) chan net.Conn {
+	ch := make(chan net.Conn)
+	go func() {
+		for {
+			con, _ := net.Dial("tcp", listenAddr)
+			if con == nil {
+				continue
+			}
+			ch <- con
 		}
 	}()
 	return ch
