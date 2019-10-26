@@ -33,11 +33,11 @@ requirements of the licenses.
 Further "human readable" summaries of these licenses can be found here:
 
 * GNU AGPLv3
-    * <http://choosealicense.com/licenses/agpl-3.0/>
-    * <https://www.gnu.org/licenses/why-affero-gpl.html>
+  * <http://choosealicense.com/licenses/agpl-3.0/>
+  * <https://www.gnu.org/licenses/why-affero-gpl.html>
 
 * CC0 Public Domain Dedication
-    * <https://creativecommons.org/publicdomain/zero/1.0/>
+  * <https://creativecommons.org/publicdomain/zero/1.0/>
 
 Note that the author reserves all rights not explicitly granted under the
 licenses. If you wish to use this work in a manner that conflicts with the
