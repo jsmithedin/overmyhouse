@@ -25,6 +25,7 @@ var (
 	baseLon    = flag.Float64("baseLon", -3.236900, "longitude for distance calculation")
 	mode       = flag.String("mode", "overhead", "overhead or table")
 	radius     = flag.Int("radius", 3, "Radius to alert on")
+	feeder     = flag.String("feeder", "192.168.1.50:30005", "IP and port of BEAST feed")
 )
 
 func main() {
@@ -48,7 +49,7 @@ func main() {
 		server, _ := net.Listen("tcp", *listenAddr)
 		conns = startServer(server)
 	} else {
-		conns = startClient(*listenAddr)
+		conns = startClient(*feeder)
 	}
 
 	ticker := time.NewTicker(500 * time.Millisecond)
@@ -92,11 +93,11 @@ func startServer(listener net.Listener) chan net.Conn {
 	return ch
 }
 
-func startClient(listenAddr string) chan net.Conn {
+func startClient(feeder string) chan net.Conn {
 	ch := make(chan net.Conn)
 	go func() {
 		for {
-			con, _ := net.Dial("tcp", listenAddr)
+			con, _ := net.Dial("tcp", feeder)
 			if con == nil {
 				continue
 			}
