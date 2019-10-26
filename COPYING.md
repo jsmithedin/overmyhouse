@@ -1,4 +1,4 @@
-overmyhouse - https://github.com/jsmithedin/overmyhouse  
+overmyhouse - <https://github.com/jsmithedin/overmyhouse>  
 Copyright © 2019, [Jamie Smith](https://jsmth.co.uk/).
 All rights reserved.
 
@@ -33,10 +33,10 @@ requirements of the licenses.
 Further "human readable" summaries of these licenses can be found here:
 
 * GNU AGPLv3
-  * http://choosealicense.com/licenses/agpl-3.0/
-  * https://www.gnu.org/licenses/why-affero-gpl.html
+  * <http://choosealicense.com/licenses/agpl-3.0/>
+  * <https://www.gnu.org/licenses/why-affero-gpl.html>
 * CC0 Public Domain Dedication
-  * https://creativecommons.org/publicdomain/zero/1.0/
+  * <https://creativecommons.org/publicdomain/zero/1.0/>
 
 Note that the author reserves all rights not explicitly granted under the
 licenses. If you wish to use this work in a manner that conflicts with the
@@ -55,17 +55,17 @@ but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 [GNU Affero General Public License][LICENSE] for more details.
 
-[LICENSE]: LICENSE
-
 ---
 
 Portions of this project are ported from Simurgh
 licensed under the AGPLv3.
-https://github.com/mtigas/simurgh
+<https://github.com/mtigas/simurgh>
 
 Portions of this project are ported from dump1090 (mutability fork),
 licensed under the GPL, v2 or later.  
-https://github.com/mutability/dump1090
+<https://github.com/mutability/dump1090>
 
 Dump1090 is copyright (C) 2012 Salvatore Sanfilippo.  
 https://github.com/antirez/dump1090
+
+[LICENSE]: LICENSE

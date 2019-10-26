@@ -160,19 +160,18 @@ func decodeAC12Field(ac12Data uint) int32 {
 	if q {
 		n := int32((ac12Data&0x0FE0)>>1) + int32(ac12Data&0x000F)
 		return (n * 25) - 1000
-	} else {
-		/* TODO
-		// Make N a 13 bit Gillham coded altitude by inserting M=0 at bit 6
-		int n = ((AC12Field & 0x0FC0) << 1) |
-						 (AC12Field & 0x003F);
-		n = ModeAToModeC(decodeID13Field(n));
-		if (n < -12) {
-				return INVALID_ALTITUDE;
-		}
-		return (100 * n);
-		*/
-		return int32(math.MaxInt32)
 	}
+	/* TODO
+	// Make N a 13 bit Gillham coded altitude by inserting M=0 at bit 6
+	int n = ((AC12Field & 0x0FC0) << 1) |
+					 (AC12Field & 0x003F);
+	n = ModeAToModeC(decodeID13Field(n));
+	if (n < -12) {
+			return INVALID_ALTITUDE;
+	}
+	return (100 * n);
+	*/
+	return int32(math.MaxInt32)
 }
 
 func greatcircle(lat0, lon0, lat1, lon1 float64) float64 {
