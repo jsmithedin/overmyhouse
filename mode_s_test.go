@@ -45,3 +45,55 @@ func Test_ParseRawLatLon(t *testing.T) {
 		}
 	}
 }
+
+func Test_decodeExtendedSquitter(t *testing.T) {
+	testAircraft := aircraftData{}
+
+	tests := []struct {
+		message   []byte
+		callsign  string
+		altitude  int32
+		latitude  float64
+		longitude float64
+	}{
+		{message: []byte{141, 64, 12, 74, 153, 68, 2, 22, 232, 72, 11, 144, 151, 165}, callsign: "", altitude: 0, latitude: 0, longitude: 0},
+		{message: []byte{141, 64, 86, 11, 88, 37, 196, 163, 243, 90, 151, 218, 105, 13}, callsign: "", altitude: 6500, latitude: 0, longitude: 0},
+		{message: []byte{141, 64, 115, 119, 33, 52, 66, 112, 226, 8, 32, 34, 235, 246}, callsign: "MDI08   ", altitude: 6500, latitude: 0, longitude: 0},
+	}
+
+	for _, tc := range tests {
+		decodeExtendedSquitter(tc.message, &testAircraft)
+		if !reflect.DeepEqual(testAircraft.callsign, tc.callsign) {
+			t.Fatalf("expected: %v, got: :%v:", tc.callsign, testAircraft.callsign)
+		}
+		if !reflect.DeepEqual(testAircraft.altitude, tc.altitude) {
+			t.Fatalf("expected: %v, got: %v", tc.altitude, testAircraft.altitude)
+		}
+		if !reflect.DeepEqual(testAircraft.latitude, tc.latitude) {
+			t.Fatalf("expected: %v, got: %v", tc.latitude, testAircraft.latitude)
+		}
+		if !reflect.DeepEqual(testAircraft.longitude, tc.longitude) {
+			t.Fatalf("expected: %v, got: %v", tc.longitude, testAircraft.longitude)
+		}
+	}
+}
+
+func Test_parseModeS(t *testing.T) {
+	testKnownAircraft := &KnownAircraft{}
+
+	tests := []struct {
+		message []byte
+		isMlat  bool
+		number  int
+	}{
+		{message: []byte{141, 64, 15, 154, 153, 20, 254, 133, 161, 36, 130, 240, 148, 109}, isMlat: true, number: 1},
+		{message: []byte{141, 64, 15, 154, 153, 20, 254, 133, 161, 36, 130, 240, 148, 109}, isMlat: true, number: 1},
+	}
+
+	for _, tc := range tests {
+		parseModeS(tc.message, tc.isMlat, testKnownAircraft)
+		if !reflect.DeepEqual(testKnownAircraft.getNumberOfKnown(), tc.number) {
+			t.Fatalf("expected: %v, got: :%v:", tc.number, testKnownAircraft.getNumberOfKnown())
+		}
+	}
+}

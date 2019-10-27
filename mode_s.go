@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/binary"
-	"fmt"
 	"math"
 	"time"
 )
@@ -105,9 +104,6 @@ func parseTime(timebytes []byte) time.Time {
 }
 
 func decodeExtendedSquitter(message []byte, aircraft *aircraftData) {
-	fmt.Println("Squitter")
-	fmt.Println(message)
-
 	var callsign string
 
 	msgType := uint(message[4]) >> 3
@@ -225,8 +221,6 @@ func parseRawLatLon(evenLat uint32, evenLon uint32, oddLat uint32,
 }
 
 func decodeCallsign(message *[]byte) string {
-	fmt.Println("Callsign")
-	fmt.Println(message)
 	chars1 := uint((*message)[5])<<16 + uint((*message)[6])<<8 + uint((*message)[7])
 	chars2 := uint((*message)[8])<<16 + uint((*message)[9])<<8 + uint((*message)[10])
 
@@ -264,8 +258,6 @@ func decodeCallsign(message *[]byte) string {
 }
 
 func decodeAirbornePosition(message *[]byte, msgType uint) (rawLatitude uint32, rawLongitude uint32, altitude int32) {
-	fmt.Println("Airborne Position")
-	fmt.Println(message)
 	ac12Data := (uint((*message)[5]) << 4) + (uint((*message)[6])>>4)&0x0FFF
 
 	rawLatitude = uint32((*message)[6])&3<<15 + uint32((*message)[7])<<7 +
@@ -281,8 +273,6 @@ func decodeAirbornePosition(message *[]byte, msgType uint) (rawLatitude uint32, 
 }
 
 func setPositions(message *[]byte, aircraft *aircraftData, rawLatitude uint32, rawLongitude uint32) (latitude float64, longitude float64) {
-	fmt.Println("Set Positions")
-	fmt.Println(message)
 	if (rawLatitude != math.MaxUint32) && (rawLongitude != math.MaxUint32) {
 		tFlag := (byte((*message)[6]) & 8) == 8
 		isOddFrame := (byte((*message)[6]) & 4) == 4
