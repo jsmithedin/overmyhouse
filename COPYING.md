@@ -12,7 +12,6 @@ requirements of the licenses.
 1.  This project as a whole — including documentation, source code, code
    comments, and executable forms — is licensed under the [GNU Affero General
    Public License v3.0](http://choosealicense.com/licenses/agpl-3.0/) (GNU AGPLv3).
-
     *   Among the basic requirements (i.e. reproducing the copyright
      notices), if you reuse any part of this project's source code, this
      license requires you to make all of your project's source code freely
@@ -25,7 +24,6 @@ requirements of the licenses.
    GitHub Wiki, etc.) are to be considered in the public domain (under the
    terms of the [Creative Commons CC0 Public Domain Dedication](https://creativecommons.org/publicdomain/zero/1.0/)), unless
    otherwise noted.
-
     *   This means that sample code from documentation may be used freely in
      your own projects without worrying about the restrictions of the
      above-mentioned GNU AGPLv3.
