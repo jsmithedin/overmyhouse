@@ -1,6 +1,7 @@
 package main
 
 import (
+	"math"
 	"sync"
 	"testing"
 )
@@ -63,7 +64,7 @@ func TestGetSortedAircraft(t *testing.T) {
 	testKnown = &KnownAircraft{}
 	testAircraft := aircraftData{}
 
-	for i := 5; i < 0; i-- {
+	for i := 0; i < 5; i++ {
 		testKnown.addAircraft(uint32(i), &testAircraft)
 	}
 
@@ -96,4 +97,109 @@ func addKnown(ka *KnownAircraft, icao uint32, ac *aircraftData, wg *sync.WaitGro
 func sortKnown(ka *KnownAircraft, wg *sync.WaitGroup) {
 	_ = ka.sortedAircraft()
 	wg.Done()
+}
+
+func setupAircraftList() aircraftList {
+	testList := make(aircraftList, 0, 10)
+	return testList
+}
+
+func TestSwap(t *testing.T) {
+	testList := setupAircraftList()
+	testAircraft1 := aircraftData{icaoAddr: 1, callsign: "b", latitude: math.MaxFloat64}
+	testAircraft2 := aircraftData{icaoAddr: 2, callsign: "a", latitude: math.MaxFloat64}
+
+	testList = append(testList, &testAircraft1)
+	testList = append(testList, &testAircraft2)
+
+	testList.Swap(0, 1)
+
+	if testList[0].icaoAddr != 2 {
+		t.Errorf("Didn't properly swap")
+	}
+}
+
+func TestLessNoLocation(t *testing.T) {
+	testList := setupAircraftList()
+	testAircraft1 := aircraftData{icaoAddr: 1, callsign: "b", latitude: math.MaxFloat64}
+	testAircraft2 := aircraftData{icaoAddr: 2, callsign: "a", latitude: math.MaxFloat64}
+
+	testList = append(testList, &testAircraft1)
+	testList = append(testList, &testAircraft2)
+
+	less := testList.Less(0, 1)
+
+	if less != false {
+		t.Errorf("Didn't less")
+	}
+}
+
+func TestLessOneLocation(t *testing.T) {
+	testList := setupAircraftList()
+	testAircraft1 := aircraftData{icaoAddr: 2, callsign: "a", latitude: math.MaxFloat64}
+	testAircraft2 := aircraftData{icaoAddr: 2, callsign: "c", latitude: 1.0}
+	testList = append(testList, &testAircraft1)
+	testList = append(testList, &testAircraft2)
+
+	less := testList.Less(1, 0)
+
+	if less != true {
+		t.Errorf("Didn't properly less")
+	}
+
+	less = testList.Less(0, 1)
+
+	if less != false {
+		t.Errorf("Didn't properly less")
+	}
+}
+
+func TestLessTwoLocations(t *testing.T) {
+	testList := setupAircraftList()
+	testAircraft1 := aircraftData{icaoAddr: 2, callsign: "c", latitude: 1.0, longitude: 1.0}
+	testAircraft2 := aircraftData{icaoAddr: 2, callsign: "d", latitude: 2.0, longitude: 2.0}
+	testList = append(testList, &testAircraft1)
+	testList = append(testList, &testAircraft2)
+
+	less := testList.Less(0, 1)
+
+	if less != false {
+		t.Errorf("Didn't properly less")
+	}
+}
+
+func TestLessByCallsign(t *testing.T) {
+	testList := setupAircraftList()
+	testAircraft1 := aircraftData{icaoAddr: 1, callsign: "c", latitude: math.MaxFloat64}
+	testAircraft2 := aircraftData{icaoAddr: 2, callsign: "d", latitude: math.MaxFloat64}
+	testAircraft3 := aircraftData{icaoAddr: 3, latitude: math.MaxFloat64}
+	testAircraft4 := aircraftData{icaoAddr: 4, latitude: math.MaxFloat64}
+	testList = append(testList, &testAircraft1)
+	testList = append(testList, &testAircraft2)
+	testList = append(testList, &testAircraft3)
+	testList = append(testList, &testAircraft4)
+
+	less := testList.Less(0, 1)
+
+	if less != true {
+		t.Errorf("Didn't properly less")
+	}
+
+	less = testList.Less(2, 0)
+
+	if less != false {
+		t.Errorf("Didn't properly less")
+	}
+
+	less = testList.Less(0, 2)
+
+	if less != true {
+		t.Errorf("Didn't properly less")
+	}
+
+	less = testList.Less(3, 2)
+
+	if less != false {
+		t.Errorf("Didn't properly less")
+	}
 }
