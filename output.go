@@ -16,6 +16,15 @@ func durationSecondsElapsed(since time.Duration) string {
 	}
 }
 
+func printStats(knownAircraft *KnownAircraft, tweetedAircraft *TweetedAircraft) {
+	t := time.Now()
+	numberOfKnownAircraft := knownAircraft.getNumberOfKnown()
+	numberOfTweetedAircraft := tweetedAircraft.getNumberOfTweeted()
+
+	fmt.Printf("%d-%02d-%02dT%02d:%02d:%02d-00:00 Known: %d\tTweeted: %d\n", t.Year(), t.Month(), t.Day(),
+		t.Hour(), t.Minute(), t.Second(), numberOfKnownAircraft, numberOfTweetedAircraft)
+}
+
 func printOverhead(knownAircraft *KnownAircraft, tweetedAircraft *TweetedAircraft, radius *int) {
 	sortedAircraft := knownAircraft.sortedAircraft()
 
@@ -37,7 +46,7 @@ func printOverhead(knownAircraft *KnownAircraft, tweetedAircraft *TweetedAircraf
 			tPos := time.Since(aircraft.lastPos)
 
 			if !stale && !extraStale && metersInMiles(distance) < float64(*radius) {
-				if !tweetedAircraft.AlreadyTweeted(aircraft.callsign) {
+				if !tweetedAircraft.alreadyTweeted(aircraft.callsign) {
 					log.Printf("%06x\t%8s\t%s%s\t%3.2f\t%s\n",
 						aircraft.icaoAddr, aircraft.callsign,
 						sLatLon, sAlt, metersInMiles(distance),
@@ -51,7 +60,7 @@ func printOverhead(knownAircraft *KnownAircraft, tweetedAircraft *TweetedAircraf
 							log.Print(err)
 						}
 
-						tweetedAircraft.AddAircraft(aircraft.callsign)
+						tweetedAircraft.addAircraft(aircraft.callsign)
 					}
 				}
 			}
@@ -62,10 +71,8 @@ func printOverhead(knownAircraft *KnownAircraft, tweetedAircraft *TweetedAircraf
 	}
 }
 
-func printAircraftTable(knownAircraft *KnownAircraft, log bool) {
-	if log == false {
-		fmt.Print("\x1b[H\x1b[2J")
-	}
+func printAircraftTable(knownAircraft *KnownAircraft) {
+	fmt.Print("\x1b[H\x1b[2J")
 	fmt.Println("ICAO \tCallsign\tLocation\t\tAlt\tDistance   Time")
 
 	sortedAircraft := knownAircraft.sortedAircraft()

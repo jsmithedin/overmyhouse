@@ -36,6 +36,13 @@ type KnownAircraft struct {
 	mu       sync.Mutex
 }
 
+func (kAircraft *KnownAircraft) getNumberOfKnown() (total int) {
+	kAircraft.mu.Lock()
+	defer kAircraft.mu.Unlock()
+	total = len(kAircraft.knownMap)
+	return total
+}
+
 func (kAircraft *KnownAircraft) getAircraft(icaoAddr uint32) (ptrAircraft *aircraftData, aircraftExists bool) {
 	kAircraft.mu.Lock()
 	defer kAircraft.mu.Unlock()

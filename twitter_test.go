@@ -11,38 +11,50 @@ var testTweeted *TweetedAircraft
 
 func TestAddingAircraftToTweeted(t *testing.T) {
 	testTweeted = &TweetedAircraft{}
-	testTweeted.AddAircraft("addAircraft")
+	testTweeted.addAircraft("addAircraft")
 	if testTweeted.tweetedMap["addAircraft"] == 0 {
 		t.Errorf("Didn't add aircraft")
 	}
 }
 
+func TestGetNumberOfTweeted(t *testing.T) {
+	testTweeted = &TweetedAircraft{}
+	for i := 0; i < 5; i++ {
+		testTweeted.addAircraft(string(i))
+	}
+
+	total := testTweeted.getNumberOfTweeted()
+	if total != 5 {
+		t.Errorf("Incorrect total of aircraft tweeted got %d", total)
+	}
+}
+
 func TestCheckForAircraftTweeted(t *testing.T) {
 	testTweeted = &TweetedAircraft{}
-	testTweeted.AddAircraft("checkAircraft")
+	testTweeted.addAircraft("checkAircraft")
 
-	if !testTweeted.AlreadyTweeted("checkAircraft") {
+	if !testTweeted.alreadyTweeted("checkAircraft") {
 		t.Errorf("Didn't properly find aircraft")
 	}
 
-	if testTweeted.AlreadyTweeted("checkAnotherAircraft") {
+	if testTweeted.alreadyTweeted("checkAnotherAircraft") {
 		t.Errorf("Found an aircraft I shouldn't have")
 	}
 }
 
 func TestPruneAircraftTweeted(t *testing.T) {
 	testTweeted = &TweetedAircraft{}
-	testTweeted.AddAircraft("pruneAircraft")
-	testTweeted.AddAircraft("dontPruneAircraft")
+	testTweeted.addAircraft("pruneAircraft")
+	testTweeted.addAircraft("dontPruneAircraft")
 	testTweeted.tweetedMap["pruneAircraft"] = time.Now().Unix() - 120
 
-	testTweeted.PruneTweeted()
+	testTweeted.pruneTweeted()
 
-	if testTweeted.AlreadyTweeted("pruneAircraft") {
+	if testTweeted.alreadyTweeted("pruneAircraft") {
 		t.Errorf("Didn't properly prune")
 	}
 
-	if !testTweeted.AlreadyTweeted("dontPruneAircraft") {
+	if !testTweeted.alreadyTweeted("dontPruneAircraft") {
 		t.Errorf("Pruned too many")
 	}
 }
@@ -50,7 +62,7 @@ func TestPruneAircraftTweeted(t *testing.T) {
 func TestConcurrentAddTweeted(t *testing.T) {
 	testTweeted = &TweetedAircraft{}
 	// Start with one aircraft to initialise
-	testTweeted.AddAircraft("ABC")
+	testTweeted.addAircraft("ABC")
 	channel := make(chan string)
 	var wg sync.WaitGroup
 
@@ -66,7 +78,7 @@ func TestConcurrentAddTweeted(t *testing.T) {
 	wg.Wait()
 
 	for i := 0; i < 500; i++ {
-		if !testTweeted.AlreadyTweeted(fmt.Sprintf("ABC%d", i)) {
+		if !testTweeted.alreadyTweeted(fmt.Sprintf("ABC%d", i)) {
 			t.Errorf("Concurrent adding went wrong")
 		}
 	}
@@ -75,7 +87,7 @@ func TestConcurrentAddTweeted(t *testing.T) {
 func TestConcurrentAddAndPruneTweeted(t *testing.T) {
 	testTweeted = &TweetedAircraft{}
 	// Start with one aircraft to initialise
-	testTweeted.AddAircraft("ABC")
+	testTweeted.addAircraft("ABC")
 	channel := make(chan string)
 	var wg sync.WaitGroup
 
@@ -94,7 +106,7 @@ func TestConcurrentAddAndPruneTweeted(t *testing.T) {
 	wg.Wait()
 
 	for i := 0; i < 500; i++ {
-		if !testTweeted.AlreadyTweeted(fmt.Sprintf("ABC%d", i)) {
+		if !testTweeted.alreadyTweeted(fmt.Sprintf("ABC%d", i)) {
 			t.Errorf("Concurrent adding went wrong")
 		}
 	}
@@ -102,11 +114,11 @@ func TestConcurrentAddAndPruneTweeted(t *testing.T) {
 
 func addTweeted(tt *TweetedAircraft, c <-chan string, wg *sync.WaitGroup) {
 	cs := <-c
-	tt.AddAircraft(cs)
+	tt.addAircraft(cs)
 	wg.Done()
 }
 
 func pruneTweeted(tt *TweetedAircraft, wg *sync.WaitGroup) {
-	tt.PruneTweeted()
+	tt.pruneTweeted()
 	wg.Done()
 }

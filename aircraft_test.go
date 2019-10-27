@@ -16,6 +16,21 @@ func TestAddingAircraftToKnown(t *testing.T) {
 	}
 }
 
+func TestGetNumberOfKnown(t *testing.T) {
+	testKnown = &KnownAircraft{}
+	testAircraft := aircraftData{}
+
+	for i := 0; i < 5; i++ {
+		testKnown.addAircraft(uint32(i), &testAircraft)
+	}
+
+	total := testKnown.getNumberOfKnown()
+
+	if total != 5 {
+		t.Errorf("Incorrect total of aircraft known got %d", total)
+	}
+}
+
 func TestRemoveAircraftFromKnown(t *testing.T) {
 	testKnown = &KnownAircraft{}
 	testAircraft := aircraftData{}
