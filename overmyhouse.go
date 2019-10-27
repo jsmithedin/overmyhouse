@@ -61,13 +61,13 @@ func main() {
 			case <-ticker.C:
 				switch *mode {
 				case "table":
-					printAircraftTable(&knownAircraft, false)
+					printAircraftTable(&knownAircraft)
 				default:
 					printOverhead(&knownAircraft, &tweetedAircraft, radius)
-					tweetedAircraft.PruneTweeted()
+					tweetedAircraft.pruneTweeted()
 					logCount += 500
 					if logCount == 30000 {
-						printAircraftTable(&knownAircraft, true)
+						printStats(&knownAircraft, &tweetedAircraft)
 						logCount = 0
 					}
 				}
@@ -104,7 +104,7 @@ func startClient(feeder string) chan net.Conn {
 	go func() {
 		con, _ := net.Dial("tcp", feeder)
 		if con == nil {
-			con.Close()
+			_ = con.Close()
 			con, _ = net.Dial("tcp", feeder)
 		}
 		ch <- con
