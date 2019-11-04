@@ -5,10 +5,11 @@ import (
 	"flag"
 	"log"
 	"net"
+	"net/http"
 	"reflect"
 	"time"
 
-	"github.com/coreos/go-systemd/daemon"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"gopkg.in/natefinch/lumberjack.v2"
 )
 
@@ -38,6 +39,9 @@ func main() {
 	})
 
 	log.Println("Starting to watch over my house")
+
+	http.Handle("/metrics", promhttp.Handler())
+	_ = http.ListenAndServe(":2112", nil)
 
 	flag.Parse()
 
@@ -78,8 +82,6 @@ func main() {
 		}
 	}()
 
-	_, _ = daemon.SdNotify(false, "READY=1")
-
 	for {
 		go handleConnection(<-conns, &knownAircraft)
 	}
@@ -104,7 +106,6 @@ func startClient(feeder string) chan net.Conn {
 	go func() {
 		con, _ := net.Dial("tcp", feeder)
 		if con == nil {
-			_ = con.Close()
 			con, _ = net.Dial("tcp", feeder)
 		}
 		ch <- con
