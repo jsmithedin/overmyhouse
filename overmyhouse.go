@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"flag"
+	"github.com/prometheus/client_golang/prometheus"
 	"log"
 	"net"
 	"net/http"
@@ -20,14 +21,29 @@ const (
 )
 
 var (
-	serverMode = flag.String("serverMode", "client", "Act as client or server")
-	listenAddr = flag.String("bind", "127.0.0.1:8081", "\":port\" or \"ip:port\" to bind the server to")
-	baseLat    = flag.Float64("baseLat", 55.910838, "latitude used for distance calculation")
-	baseLon    = flag.Float64("baseLon", -3.236900, "longitude for distance calculation")
-	mode       = flag.String("mode", "overhead", "overhead or table")
-	radius     = flag.Int("radius", 3, "Radius to alert on")
-	feeder     = flag.String("feeder", "192.168.1.50:30005", "IP and port of BEAST feed")
+	serverMode          = flag.String("serverMode", "client", "Act as client or server")
+	listenAddr          = flag.String("bind", "127.0.0.1:8081", "\":port\" or \"ip:port\" to bind the server to")
+	baseLat             = flag.Float64("baseLat", 55.910838, "latitude used for distance calculation")
+	baseLon             = flag.Float64("baseLon", -3.236900, "longitude for distance calculation")
+	mode                = flag.String("mode", "overhead", "overhead or table")
+	radius              = flag.Int("radius", 3, "Radius to alert on")
+	feeder              = flag.String("feeder", "192.168.1.50:30005", "IP and port of BEAST feed")
+	knownAircraftMetric = prometheus.NewGauge(prometheus.GaugeOpts{
+		Name: "known_aircraft",
+		Help: "Number of currently known aircraft",
+	})
+	processedMessagesMetric = prometheus.NewCounterVec(
+		prometheus.CounterOpts{
+			Name: "processed_messages",
+			Help: "Number of mode s messages processed",
+		},
+		[]string{"type"})
 )
+
+func init() {
+	prometheus.MustRegister(knownAircraftMetric)
+	prometheus.MustRegister(processedMessagesMetric)
+}
 
 func main() {
 	log.SetOutput(&lumberjack.Logger{
@@ -67,6 +83,7 @@ func main() {
 					printAircraftTable(&knownAircraft)
 				default:
 					printOverhead(&knownAircraft, &tweetedAircraft, radius)
+					knownAircraftMetric.Set(float64(knownAircraft.getNumberOfKnown()))
 					tweetedAircraft.pruneTweeted()
 					logCount += 500
 					if logCount == 30000 {
@@ -179,6 +196,7 @@ func handleConnection(conn net.Conn, knownAircraft *KnownAircraft) {
 		msgContent := message[8 : len(message)-1]
 
 		parseModeS(msgContent, isMlat, knownAircraft)
+		processedMessagesMetric.With(prometheus.Labels{"type": "any"}).Inc()
 	}
 
 }
