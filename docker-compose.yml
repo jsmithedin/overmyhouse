@@ -2,6 +2,7 @@ version: "3"
 services:
         overmyhouse:
                 image: jsmithedin/overmyhouse:latest
+                ports: "2112:2112"
         watchtower:
                 image: containrrr/watchtower
                 volumes:

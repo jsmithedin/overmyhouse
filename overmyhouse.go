@@ -40,8 +40,7 @@ func main() {
 
 	log.Println("Starting to watch over my house")
 
-	http.Handle("/metrics", promhttp.Handler())
-	_ = http.ListenAndServe(":2112", nil)
+	go serveMetrics()
 
 	flag.Parse()
 
@@ -85,6 +84,11 @@ func main() {
 	for {
 		go handleConnection(<-conns, &knownAircraft)
 	}
+}
+
+func serveMetrics() {
+	http.Handle("/metrics", promhttp.Handler())
+	log.Fatal(http.ListenAndServe(":2112", nil))
 }
 
 func startServer(listener net.Listener) chan net.Conn {
