@@ -26,7 +26,7 @@ var (
 	baseLat             = flag.Float64("baseLat", 55.910838, "latitude used for distance calculation")
 	baseLon             = flag.Float64("baseLon", -3.236900, "longitude for distance calculation")
 	mode                = flag.String("mode", "overhead", "overhead or table")
-	radius              = flag.Int("radius", 3, "Radius to alert on")
+	radius              = flag.Int("radius", 5, "Radius to alert on")
 	feeder              = flag.String("feeder", "192.168.1.50:30005", "IP and port of BEAST feed")
 	knownAircraftMetric = prometheus.NewGauge(prometheus.GaugeOpts{
 		Name: "known_aircraft",
