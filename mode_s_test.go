@@ -13,7 +13,7 @@ func Test_ParseTime(t *testing.T) {
 	timestamp := parseTime(timestampBytes)
 
 	// TODO: Investigate why this changed once...
-	if timestamp.Unix() != 1572875558 {
+	if timestamp.Unix() != 1574862758 {
 		t.Errorf("Got %d", timestamp.Unix())
 	}
 }
