@@ -19,13 +19,14 @@ const (
 )
 
 var (
-	serverMode = flag.String("serverMode", "client", "Act as client or server")
-	listenAddr = flag.String("bind", "127.0.0.1:8081", "\":port\" or \"ip:port\" to bind the server to")
-	baseLat    = flag.Float64("baseLat", 55.910838, "latitude used for distance calculation")
-	baseLon    = flag.Float64("baseLon", -3.236900, "longitude for distance calculation")
-	mode       = flag.String("mode", "overhead", "overhead or table")
-	radius     = flag.Int("radius", 3, "Radius to alert on")
-	feeder     = flag.String("feeder", "192.168.1.50:30005", "IP and port of BEAST feed")
+	serverMode  = flag.String("serverMode", "client", "Act as client or server")
+	listenAddr  = flag.String("bind", "127.0.0.1:8081", "\":port\" or \"ip:port\" to bind the server to")
+	baseLat     = flag.Float64("baseLat", 55.910838, "latitude used for distance calculation")
+	baseLon     = flag.Float64("baseLon", -3.236900, "longitude for distance calculation")
+	mode        = flag.String("mode", "overhead", "overhead or table")
+	radius      = flag.Int("radius", 3, "Radius to alert on")
+	feeder      = flag.String("feeder", "192.168.1.50:30005", "IP and port of BEAST feed")
+	cleanupTime = flag.Int("cleanupTimeout", 60, "number of seconds after last contact before cleanup")
 )
 
 func main() {
@@ -60,6 +61,7 @@ func main() {
 				switch *mode {
 				case "table":
 					printAircraftTable(&knownAircraft)
+					knownAircraft.pruneKnown(time.Now(), uint32(*cleanupTime))
 				default:
 					printOverhead(&knownAircraft, &tweetedAircraft, radius)
 					tweetedAircraft.pruneTweeted()
@@ -68,6 +70,7 @@ func main() {
 						printStats(&knownAircraft, &tweetedAircraft)
 						logCount = 0
 					}
+					knownAircraft.pruneKnown(time.Now(), uint32(*cleanupTime))
 				}
 			case <-quit:
 				ticker.Stop()
