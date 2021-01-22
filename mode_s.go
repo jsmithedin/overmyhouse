@@ -14,7 +14,6 @@ func parseModeS(message []byte, isMlat bool, knownAircraft *KnownAircraft) {
 	var aircraft aircraftData
 	var aircraftExists bool
 	icaoAddr := uint32(math.MaxUint32)
-	altCode := uint16(math.MaxUint16)
 	altitude := int32(math.MaxInt32)
 
 	if linkFmt == 11 || linkFmt == 17 || linkFmt == 18 {
@@ -46,7 +45,7 @@ func parseModeS(message []byte, isMlat bool, knownAircraft *KnownAircraft) {
 
 	if linkFmt == 0 || linkFmt == 4 || linkFmt == 16 || linkFmt == 20 {
 		// Altitude: 13 bit signal
-		altCode = (uint16(message[2])*256 + uint16(message[3])) & 0x1FFF
+		altCode := (uint16(message[2])*256 + uint16(message[3])) & 0x1FFF
 
 		if (altCode & 0x0040) > 0 {
 			// meters
@@ -57,10 +56,7 @@ func parseModeS(message []byte, isMlat bool, knownAircraft *KnownAircraft) {
 			ac := (altCode&0x1F80)>>2 + (altCode&0x0020)>>1 + (altCode & 0x000F)
 			altitude = int32((ac * 25) - 1000)
 
-		} else if (altCode & 0x0010) == 0 {
-			// feet, Gillham coded
-			// TODO
-		}
+		} 
 
 		if altitude != math.MaxInt32 {
 			aircraft.altitude = altitude
@@ -116,8 +112,6 @@ func decodeExtendedSquitter(message []byte, aircraft *aircraftData) {
 
 	rawLatitude := uint32(math.MaxUint32)
 	rawLongitude := uint32(math.MaxUint32)
-	latitude := float64(math.MaxFloat64)
-	longitude := float64(math.MaxFloat64)
 	altitude := int32(math.MaxInt32)
 
 	switch msgType {
@@ -140,7 +134,7 @@ func decodeExtendedSquitter(message []byte, aircraft *aircraftData) {
 		rawLatitude, rawLongitude, altitude = decodeAirbornePosition(&message, msgType)
 	}
 
-	latitude, longitude = setPositions(&message, aircraft, rawLatitude, rawLongitude)
+	latitude, longitude := setPositions(&message, aircraft, rawLatitude, rawLongitude)
 
 	switch msgSubType {
 	case 1:

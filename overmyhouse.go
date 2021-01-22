@@ -44,12 +44,10 @@ func main() {
 	var knownAircraft KnownAircraft
 	var tweetedAircraft TweetedAircraft
 
-	conns := make(chan net.Conn)
+	conns := startClient(*feeder)
 	if *serverMode == "server" {
 		server, _ := net.Listen("tcp", *listenAddr)
 		conns = startServer(server)
-	} else {
-		conns = startClient(*feeder)
 	}
 
 	ticker := time.NewTicker(500 * time.Millisecond)
