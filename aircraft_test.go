@@ -4,6 +4,7 @@ import (
 	"math"
 	"sync"
 	"testing"
+	"time"
 )
 
 var testKnown *KnownAircraft
@@ -87,6 +88,20 @@ func TestSortWhilstAdding(t *testing.T) {
 	go sortKnown(testKnown, &wg)
 
 	wg.Wait()
+}
+
+func TestPruneKnown(t *testing.T) {
+	testKnown = &KnownAircraft{}
+	testAircraft := aircraftData{lastPing: time.Now(), icaoAddr: 123}
+	testKnown.addAircraft(123, &testAircraft)
+
+	now := time.Now().Add(time.Duration(61) * time.Second)
+
+	testKnown.pruneKnown(now, 60)
+	_, known := testKnown.getAircraft(123)
+	if known {
+		t.Errorf("Aircraft not removed")
+	}
 }
 
 func addKnown(ka *KnownAircraft, icao uint32, ac *aircraftData, wg *sync.WaitGroup) {

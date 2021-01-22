@@ -66,6 +66,15 @@ func (kAircraft *KnownAircraft) removeAircraft(icaoAddr uint32) {
 	kAircraft.mu.Unlock()
 }
 
+func (kAircraft *KnownAircraft) pruneKnown(now time.Time, timeout uint32) {
+	knownList := kAircraft.sortedAircraft()
+	for _, aircraft := range knownList {
+		if now.Sub(aircraft.lastPing).Seconds() > float64(timeout) {
+			kAircraft.removeAircraft(aircraft.icaoAddr)
+		}
+	}
+}
+
 func (kAircraft *KnownAircraft) sortedAircraft() (sortedAircraftList aircraftList) {
 	kAircraft.mu.Lock()
 	sortedAircraftList = make(aircraftList, 0, len(kAircraft.knownMap))
