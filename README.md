@@ -1,7 +1,6 @@
 # OverMyHouse
-[![Build Status](https://travis-ci.org/jsmithedin/overmyhouse.svg?branch=master)](https://travis-ci.org/jsmithedin/overmyhouse)
 [![Go Report Card](https://goreportcard.com/badge/github.com/jsmithedin/overmyhouse)](https://goreportcard.com/report/github.com/jsmithedin/overmyhouse)
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/1c04c8ad7be744dfaf136234db208cd7)](https://www.codacy.com/manual/jsmithedin/overmyhouse?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=jsmithedin/overmyhouse&amp;utm_campaign=Badge_Grade)
+[![Coverage Status](https://coveralls.io/repos/github/jsmithedin/overmyhouse/badge.svg?branch=main)](https://coveralls.io/github/jsmithedin/overmyhouse?branch=main)
 
 Plane over my house -> ADS-B -> SDR -> BEAST -> This thing -> Twitter
 
