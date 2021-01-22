@@ -20,7 +20,7 @@ func TestAddingAircraftToTweeted(t *testing.T) {
 func TestGetNumberOfTweeted(t *testing.T) {
 	testTweeted = &TweetedAircraft{}
 	for i := 0; i < 5; i++ {
-		testTweeted.addAircraft(string(i))
+		testTweeted.addAircraft(string(rune(i)))
 	}
 
 	total := testTweeted.getNumberOfTweeted()
