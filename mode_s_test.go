@@ -5,14 +5,16 @@ import (
 	"math"
 	"reflect"
 	"testing"
+	"time"
 )
 
 func Test_ParseTime(t *testing.T) {
 	timestampBytes := make([]byte, 8)
 	binary.LittleEndian.PutUint64(timestampBytes, 0x244bbb9ac9f0)
-	timestamp := parseTime(timestampBytes)
+	utcDate := time.Now().UTC()
+	timestamp := parseTime(timestampBytes, utcDate)
 
-	if timestamp.Unix() != 1611323558 {
+	if timestamp.Unix() != 1611409958 {
 		t.Errorf("Got %d", timestamp.Unix())
 	}
 }

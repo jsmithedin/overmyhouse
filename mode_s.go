@@ -72,7 +72,7 @@ func parseModeS(message []byte, isMlat bool, knownAircraft *KnownAircraft) {
 	}
 }
 
-func parseTime(timebytes []byte) time.Time {
+func parseTime(timebytes []byte, utcDate time.Time) time.Time {
 	// Takes a 6 byte array, which represents a 48bit GPS timestamp
 	// http://wiki.modesbeast.com/Radarcape:Firmware_Versions#The_GPS_timestamp
 	// and parses it into a Time.time
@@ -91,8 +91,6 @@ func parseTime(timebytes []byte) time.Time {
 	hr := int(daySeconds / 3600)
 	min := int(daySeconds / 60 % 60)
 	sec := int(daySeconds % 60)
-
-	utcDate := time.Now().UTC()
 
 	return time.Date(
 		utcDate.Year(), utcDate.Month(), utcDate.Day(),
