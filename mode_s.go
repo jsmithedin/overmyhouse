@@ -56,7 +56,7 @@ func parseModeS(message []byte, isMlat bool, knownAircraft *KnownAircraft) {
 			ac := (altCode&0x1F80)>>2 + (altCode&0x0020)>>1 + (altCode & 0x000F)
 			altitude = int32((ac * 25) - 1000)
 
-		} 
+		}
 
 		if altitude != math.MaxInt32 {
 			aircraft.altitude = altitude
@@ -103,6 +103,7 @@ func decodeExtendedSquitter(message []byte, aircraft *aircraftData) {
 	var callsign string
 
 	msgType := uint(message[4]) >> 3
+
 	var msgSubType uint
 	if msgType == 29 {
 		msgSubType = (uint(message[4]) & 6) >> 1
