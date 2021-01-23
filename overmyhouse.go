@@ -168,7 +168,8 @@ func handleConnection(conn net.Conn, knownAircraft *KnownAircraft) {
 		var timestamp time.Time
 		isMlat := reflect.DeepEqual(message[1:7], magicTimestampMLAT)
 		if !isMlat {
-			timestamp = parseTime(message[1:7])
+			utcDate := time.Now().UTC()
+			timestamp = parseTime(message[1:7], utcDate)
 			_ = timestamp // Why?!
 		}
 

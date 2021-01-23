@@ -56,7 +56,7 @@ func parseModeS(message []byte, isMlat bool, knownAircraft *KnownAircraft) {
 			ac := (altCode&0x1F80)>>2 + (altCode&0x0020)>>1 + (altCode & 0x000F)
 			altitude = int32((ac * 25) - 1000)
 
-		} 
+		}
 
 		if altitude != math.MaxInt32 {
 			aircraft.altitude = altitude
@@ -72,7 +72,7 @@ func parseModeS(message []byte, isMlat bool, knownAircraft *KnownAircraft) {
 	}
 }
 
-func parseTime(timebytes []byte) time.Time {
+func parseTime(timebytes []byte, utcDate time.Time) time.Time {
 	// Takes a 6 byte array, which represents a 48bit GPS timestamp
 	// http://wiki.modesbeast.com/Radarcape:Firmware_Versions#The_GPS_timestamp
 	// and parses it into a Time.time
@@ -92,8 +92,6 @@ func parseTime(timebytes []byte) time.Time {
 	min := int(daySeconds / 60 % 60)
 	sec := int(daySeconds % 60)
 
-	utcDate := time.Now().UTC()
-
 	return time.Date(
 		utcDate.Year(), utcDate.Month(), utcDate.Day(),
 		hr, min, sec, nanoSeconds, time.UTC)
@@ -103,6 +101,7 @@ func decodeExtendedSquitter(message []byte, aircraft *aircraftData) {
 	var callsign string
 
 	msgType := uint(message[4]) >> 3
+
 	var msgSubType uint
 	if msgType == 29 {
 		msgSubType = (uint(message[4]) & 6) >> 1
