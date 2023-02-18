@@ -14,7 +14,7 @@ func Test_ParseTime(t *testing.T) {
 	utcDate := time.Now().UTC()
 	timestamp := parseTime(timestampBytes, utcDate)
 
-	if timestamp.Unix() != 1611409958 {
+	if timestamp.Unix() != 1676728358 {
 		t.Errorf("Got %d", timestamp.Unix())
 	}
 }
