@@ -1,7 +1,9 @@
 name: Auto.Tag
 
 on: 
-- push
+  push:
+    branches:
+      - main
 
 jobs:
   tag:
@@ -13,4 +15,5 @@ jobs:
     steps: 
     - uses: phish108/autotag-action@1.1.53
       with:
-        github-token: ${{ secrets.TOKEN}}
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        branch: main
