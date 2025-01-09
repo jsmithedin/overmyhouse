@@ -40,7 +40,7 @@ func printOverhead(knownAircraft *KnownAircraft, tweetedAircraft *TweetedAircraf
 			sLatLon := fmt.Sprintf("%f,%f", aircraft.latitude, aircraft.longitude)
 			sAlt := fmt.Sprintf("%d", aircraft.altitude)
 
-			distance := greatcircle(aircraft.latitude, aircraft.longitude,
+			distance := GreatCircle(aircraft.latitude, aircraft.longitude,
 				*baseLat, *baseLon)
 
 			tPos := time.Since(aircraft.lastPos)
@@ -100,7 +100,7 @@ func printAircraftTable(knownAircraft *KnownAircraft) {
 				sAlt = "-----"
 			}
 
-			distance := greatcircle(aircraft.latitude, aircraft.longitude,
+			distance := GreatCircle(aircraft.latitude, aircraft.longitude,
 				*baseLat, *baseLon)
 
 			isMlat := ""
@@ -120,7 +120,7 @@ func printAircraftTable(knownAircraft *KnownAircraft) {
 					aircraft.icaoAddr, aircraft.callsign,
 					sLatLon, isMlat, sAlt, metersInMiles(distance),
 					durationSecondsElapsed(tPos))
-			} else if extraStale {
+			} else {
 				fmt.Printf("%06x\t%8s\t%s%s?\t%s\t%3.2f?\t%s…\n",
 					aircraft.icaoAddr, aircraft.callsign,
 					sLatLon, isMlat, sAlt, metersInMiles(distance),

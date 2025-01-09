@@ -137,7 +137,7 @@ func Test_decodeAC12Field(t *testing.T) {
 
 }
 
-func Test_greatcircle(t *testing.T) {
+func Test_greatCircle(t *testing.T) {
 	tests := []struct {
 		lat0 float64
 		lon0 float64
@@ -150,7 +150,7 @@ func Test_greatcircle(t *testing.T) {
 	}
 
 	for _, tc := range tests {
-		got := greatcircle(tc.lat0, tc.lon0, tc.lat1, tc.lon1)
+		got := GreatCircle(tc.lat0, tc.lon0, tc.lat1, tc.lon1)
 		if !reflect.DeepEqual(tc.want, got) {
 			t.Fatalf("expected: %v, got: %v", tc.want, got)
 		}

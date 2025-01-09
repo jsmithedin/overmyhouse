@@ -108,8 +108,8 @@ func (a aircraftList) Less(i, j int) bool {
 }
 
 func sortAircraftByDistance(a aircraftList, i, j int) bool {
-	return greatcircle(a[i].latitude, a[i].longitude, *baseLat, *baseLon) <
-		greatcircle(a[j].latitude, a[j].longitude, *baseLat, *baseLon)
+	return GreatCircle(a[i].latitude, a[i].longitude, *baseLat, *baseLon) <
+		GreatCircle(a[j].latitude, a[j].longitude, *baseLat, *baseLon)
 }
 
 func sortAircraftByCallsign(a aircraftList, i, j int) bool {

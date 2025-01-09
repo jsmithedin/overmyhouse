@@ -9,14 +9,25 @@ import (
 )
 
 func Test_ParseTime(t *testing.T) {
-	timestampBytes := make([]byte, 8)
-	binary.LittleEndian.PutUint64(timestampBytes, 0x244bbb9ac9f0)
-	utcDate := time.Now().UTC()
+	const testTimestampValue = 0x244bbb9ac9f0 // Example GPS timestamp in bytes
+	expectedUnixTimestamp := int64(1676728358)
+
+	// Extracted helper to create timestamp bytes
+	timestampBytes := createTimestampBytes(testTimestampValue)
+
+	utcDate := time.Unix(expectedUnixTimestamp, 0).UTC()
 	timestamp := parseTime(timestampBytes, utcDate)
 
-	if timestamp.Unix() != 1676728358 {
-		t.Errorf("Got %d", timestamp.Unix())
+	if timestamp.Unix() != expectedUnixTimestamp {
+		t.Errorf("Expected %d, but got %d", expectedUnixTimestamp, timestamp.Unix())
 	}
+}
+
+// Helper function to create timestamp byte slice from uint64 value
+func createTimestampBytes(value uint64) []byte {
+	timestampBytes := make([]byte, 8)
+	binary.LittleEndian.PutUint64(timestampBytes, value)
+	return timestampBytes
 }
 
 func Test_ParseRawLatLon(t *testing.T) {

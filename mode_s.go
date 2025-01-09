@@ -72,29 +72,42 @@ func parseModeS(message []byte, isMlat bool, knownAircraft *KnownAircraft) {
 	}
 }
 
+const (
+	daySecondsMultiplier = 3600 // Number of seconds in an hour
+	minuteSeconds        = 60   // Number of seconds in a minute
+	secondsBitMask       = 0x3F // Mask for extracting seconds bits
+)
+
+// decodeUpperBytes decodes the upper part of the GPS timestamp (day seconds).
+func decodeUpperBytes(timebytes []byte) uint16 {
+	return binary.BigEndian.Uint16([]byte{
+		timebytes[0]<<2 | timebytes[1]>>6,
+		(timebytes[1]&0x3F)<<2 | timebytes[2]>>6,
+	})
+}
+
+// decodeLowerBytes decodes the lower part of the GPS timestamp (nanoseconds).
+func decodeLowerBytes(timebytes []byte) uint32 {
+	return binary.BigEndian.Uint32([]byte{
+		timebytes[2] & secondsBitMask, timebytes[3], timebytes[4], timebytes[5],
+	})
+}
+
 func parseTime(timebytes []byte, utcDate time.Time) time.Time {
-	// Takes a 6 byte array, which represents a 48bit GPS timestamp
-	// http://wiki.modesbeast.com/Radarcape:Firmware_Versions#The_GPS_timestamp
-	// and parses it into a Time.time
+	// Decode timestamp components
+	gpsDaySeconds := decodeUpperBytes(timebytes)
+	gpsNanoSeconds := int(decodeLowerBytes(timebytes))
 
-	upper := []byte{
-		timebytes[0]<<2 + timebytes[1]>>6,
-		timebytes[1]<<2 + timebytes[2]>>6,
-		0, 0, 0, 0}
-	lower := []byte{
-		timebytes[2] & 0x3F, timebytes[3], timebytes[4], timebytes[5]}
+	// Compute hours, minutes, seconds
+	hours := int(gpsDaySeconds / daySecondsMultiplier)
+	minutes := int(gpsDaySeconds % daySecondsMultiplier / minuteSeconds)
+	seconds := int(gpsDaySeconds % minuteSeconds)
 
-	// the 48bit timestamp is 18bit day seconds | 30bit nanoseconds
-	daySeconds := binary.BigEndian.Uint16(upper)
-	nanoSeconds := int(binary.BigEndian.Uint32(lower))
-
-	hr := int(daySeconds / 3600)
-	min := int(daySeconds / 60 % 60)
-	sec := int(daySeconds % 60)
-
+	// Return constructed UTC timestamp
 	return time.Date(
 		utcDate.Year(), utcDate.Month(), utcDate.Day(),
-		hr, min, sec, nanoSeconds, time.UTC)
+		hours, minutes, seconds, gpsNanoSeconds, time.UTC,
+	)
 }
 
 func decodeExtendedSquitter(message []byte, aircraft *aircraftData) {
@@ -285,7 +298,7 @@ func setPositions(message *[]byte, aircraft *aircraftData, rawLatitude uint32, r
 		} else if isOddFrame {
 			aircraft.oRawLat = rawLatitude
 			aircraft.oRawLon = rawLongitude
-		} else if !isOddFrame {
+		} else {
 			aircraft.eRawLat = rawLatitude
 			aircraft.eRawLon = rawLongitude
 		}
