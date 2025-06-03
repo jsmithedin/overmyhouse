@@ -10,14 +10,15 @@ Tweets to <https://twitter.com/overjamieshouse>
 
 ## Setup
 1.  go build
-2.  Stick a .env in the same dir as the binary containing twitter stuff: 
+2.  Stick a .env in the same dir as the binary containing twitter stuff:
 ```shell script
 consumerkey=
 consumersecret=
 accesstoken=
 accesssecret=
+slackwebhook=
 ```
-3.  ./overmyhouse
+3.  ./overmyhouse -notify=both # twitter, slack, or both
 ## Testing
 ``` shell script
 go test -v

@@ -53,12 +53,10 @@ func printOverhead(knownAircraft *KnownAircraft, tweetedAircraft *TweetedAircraf
 						durationSecondsElapsed(tPos))
 
 					if len(aircraft.callsign) > 0 {
-						_, err := tweet(fmt.Sprintf("https://flightaware.com/live/flight/%8s %8s flew %3.2f miles from my house at %d ft!",
-							aircraft.callsign, aircraft.callsign, metersInMiles(distance), aircraft.altitude))
+						msg := fmt.Sprintf("https://flightaware.com/live/flight/%8s %8s flew %3.2f miles from my house at %d ft!",
+							aircraft.callsign, aircraft.callsign, metersInMiles(distance), aircraft.altitude)
 
-						if err != nil {
-							log.Print(err)
-						}
+						sendNotification(msg)
 
 						tweetedAircraft.addAircraft(aircraft.callsign)
 					}

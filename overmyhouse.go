@@ -27,6 +27,7 @@ var (
 	radius      = flag.Int("radius", 3, "Radius to alert on")
 	feeder      = flag.String("feeder", "192.168.1.50:30005", "IP and port of BEAST feed")
 	cleanupTime = flag.Int("cleanupTimeout", 60, "number of seconds after last contact before cleanup")
+	notify      = flag.String("notify", "both", "Where to send notifications: twitter, slack, or both")
 )
 
 func main() {
