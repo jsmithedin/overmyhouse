@@ -103,9 +103,9 @@ func startServer(listener net.Listener) chan net.Conn {
 func startClient(feeder string) chan net.Conn {
 	ch := make(chan net.Conn)
 	go func() {
-		con, _ := net.Dial("tcp", feeder)
-		if con == nil {
-			_ = con.Close()
+		con, err := net.Dial("tcp", feeder)
+		if err != nil {
+			// retry once if the first attempt fails
 			con, _ = net.Dial("tcp", feeder)
 		}
 		ch <- con
